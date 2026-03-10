@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import RegisterStep1 from "./pages/RegisterStep1";
 import RegisterStep2 from "./pages/RegisterStep2";
+import RegisterStep3 from "./pages/RegisterStep3";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
