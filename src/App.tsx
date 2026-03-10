@@ -20,6 +20,7 @@ const App = () => (
           <Route path="/" element={<Navigate to="/register" replace />} />
           <Route path="/register" element={<RegisterStep1 />} />
           <Route path="/register/step-2" element={<RegisterStep2 />} />
+          <Route path="/register/step-3" element={<RegisterStep3 />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
