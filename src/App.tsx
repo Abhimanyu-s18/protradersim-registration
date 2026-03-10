@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import RegisterStep1 from "./pages/RegisterStep1";
 import RegisterStep2 from "./pages/RegisterStep2";
 import RegisterStep3 from "./pages/RegisterStep3";
+import RegisterStep4 from "./pages/RegisterStep4";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

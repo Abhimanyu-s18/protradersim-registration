@@ -17,9 +17,20 @@ export interface Step2Data {
   country: string;
 }
 
+export interface Step3Data {
+  employmentStatus: string;
+  annualIncome: string;
+  sourceOfFunds: string;
+  experienceLevel: string;
+  tradedProducts: string[];
+  tradesLast12Months: string;
+  acknowledgments: string[];
+}
+
 interface RegistrationPayload {
   step1: Step1Data;
   step2?: Step2Data;
+  step3?: Step3Data;
   token: string;
 }
 
@@ -36,6 +47,12 @@ export function saveStep2(data: Step2Data) {
   const existing = loadRegistration();
   if (!existing) return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...existing, step2: data }));
+}
+
+export function saveStep3(data: Step3Data) {
+  const existing = loadRegistration();
+  if (!existing) return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...existing, step3: data }));
 }
 
 export function loadRegistration(): RegistrationPayload | null {
