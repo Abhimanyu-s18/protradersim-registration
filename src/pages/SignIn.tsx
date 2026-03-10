@@ -1,13 +1,59 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, ArrowLeft } from "lucide-react";
+import { TrendingUp, ArrowLeft, AlertCircle, Loader2 } from "lucide-react";
+import { getAccountState } from "@/lib/auth-store";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [stateMessage, setStateMessage] = useState<{ type: "warning" | "error"; text: string; cta?: { label: string; to: string } } | null>(null);
+  const navigate = useNavigate();
+
+  const validate = () => {
+    if (!email.trim()) return "Please enter your email address.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Please enter a valid email address.";
+    if (!password.trim()) return "Please enter your password.";
+    if (password.length < 6) return "Password must be at least 6 characters.";
+    return null;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setStateMessage(null);
+
+    const validationError = validate();
+    if (validationError) { setError(validationError); return; }
+
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 1200));
+    setLoading(false);
+
+    const state = getAccountState();
+
+    switch (state) {
+      case "active":
+        navigate("/dashboard");
+        break;
+      case "pending_review":
+      case "pending_verification":
+        navigate("/account-pending");
+        break;
+      case "unregistered":
+      default:
+        setStateMessage({
+          type: "error",
+          text: "We couldn't find an account for that email.",
+          cta: { label: "Create Account", to: "/register" },
+        });
+        break;
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-background">
@@ -15,7 +61,6 @@ const SignIn = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background" />
 
       <div className="relative z-10 w-full max-w-md px-4">
-        {/* Brand */}
         <div className="mb-8 text-center">
           <Link to="/" className="inline-flex items-center gap-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg gold-gradient">
@@ -27,9 +72,9 @@ const SignIn = () => {
 
         <div className="glass-card rounded-2xl p-8">
           <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Sign in to your simulation account</p>
+          <p className="mt-1 text-sm text-muted-foreground">Access your ProTraderSim account</p>
 
-          <div className="mt-6 space-y-4">
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <Input
@@ -39,12 +84,15 @@ const SignIn = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-muted/50 border-border/50"
+                disabled={loading}
               />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <button className="text-xs text-primary hover:underline">Forgot password?</button>
+                <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                  Forgot password?
+                </Link>
               </div>
               <Input
                 id="password"
@@ -53,23 +101,36 @@ const SignIn = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="bg-muted/50 border-border/50"
+                disabled={loading}
               />
             </div>
-          </div>
 
-          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
-            <p className="text-xs text-muted-foreground">
-              Your account must be verified before activation. If you haven't completed registration,{" "}
-              <Link to="/register" className="text-primary hover:underline">create an account</Link> first.
-            </p>
-          </div>
+            {error && (
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+                <p className="text-xs text-destructive">{error}</p>
+              </div>
+            )}
 
-          <Button className="mt-6 w-full gold-gradient text-primary-foreground font-semibold" size="lg" disabled>
-            Sign In
-          </Button>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Sign-in will be enabled once authentication is integrated.
-          </p>
+            {stateMessage && (
+              <div className={`rounded-lg border px-4 py-3 ${
+                stateMessage.type === "error"
+                  ? "border-destructive/30 bg-destructive/10"
+                  : "border-primary/20 bg-primary/5"
+              }`}>
+                <p className="text-xs text-muted-foreground">{stateMessage.text}</p>
+                {stateMessage.cta && (
+                  <Link to={stateMessage.cta.to} className="mt-1.5 inline-block text-xs font-medium text-primary hover:underline">
+                    {stateMessage.cta.label} →
+                  </Link>
+                )}
+              </div>
+            )}
+
+            <Button type="submit" className="w-full gold-gradient text-primary-foreground font-semibold" size="lg" disabled={loading}>
+              {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing In…</> : "Sign In"}
+            </Button>
+          </form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
