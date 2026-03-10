@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import RegisterStep1 from "./pages/RegisterStep1";
 import RegisterStep2 from "./pages/RegisterStep2";
+import RegisterStep3 from "./pages/RegisterStep3";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ const App = () => (
           <Route path="/" element={<Navigate to="/register" replace />} />
           <Route path="/register" element={<RegisterStep1 />} />
           <Route path="/register/step-2" element={<RegisterStep2 />} />
+          <Route path="/register/step-3" element={<RegisterStep3 />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
