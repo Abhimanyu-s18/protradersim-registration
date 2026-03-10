@@ -5,6 +5,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "./pages/Landing";
 import SignIn from "./pages/SignIn";
+import ForgotPassword from "./pages/ForgotPassword";
+import AccountPending from "./pages/AccountPending";
+import Dashboard from "./pages/Dashboard";
 import Markets from "./pages/Markets";
 import Platform from "./pages/Platform";
 import RegisterStep1 from "./pages/RegisterStep1";
@@ -14,6 +17,7 @@ import RegisterStep4 from "./pages/RegisterStep4";
 import RegisterSuccess from "./pages/RegisterSuccess";
 import RegisterReview from "./pages/RegisterReview";
 import NotFound from "./pages/NotFound";
+import DemoStateSwitcher from "./components/DemoStateSwitcher";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +30,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/account-pending" element={<AccountPending />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/markets" element={<Markets />} />
           <Route path="/platform" element={<Platform />} />
           <Route path="/register" element={<RegisterStep1 />} />
@@ -36,6 +43,7 @@ const App = () => (
           <Route path="/register/review" element={<RegisterReview />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <DemoStateSwitcher />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
