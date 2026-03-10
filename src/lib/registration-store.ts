@@ -27,11 +27,20 @@ export interface Step3Data {
   acknowledgments: string[];
 }
 
+export interface Step4Data {
+  declarations: string[];
+  emailVerificationSent: boolean;
+  completedAt?: string;
+  referenceId?: string;
+}
+
 interface RegistrationPayload {
   step1: Step1Data;
   step2?: Step2Data;
   step3?: Step3Data;
+  step4?: Step4Data;
   token: string;
+  completed?: boolean;
 }
 
 const STORAGE_KEY = "protrader_registration";
