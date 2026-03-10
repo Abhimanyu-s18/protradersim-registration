@@ -64,6 +64,24 @@ export function saveStep3(data: Step3Data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...existing, step3: data }));
 }
 
+export function saveStep4(data: Step4Data) {
+  const existing = loadRegistration();
+  if (!existing) return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...existing, step4: data }));
+}
+
+export function completeRegistration(step4: Step4Data) {
+  const existing = loadRegistration();
+  if (!existing) return;
+  const referenceId = `PTS-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+  const finalStep4 = { ...step4, completedAt: new Date().toISOString(), referenceId };
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({ ...existing, step4: finalStep4, completed: true })
+  );
+  return referenceId;
+}
+
 export function loadRegistration(): RegistrationPayload | null {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return null;
