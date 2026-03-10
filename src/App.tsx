@@ -1,8 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import Landing from "./pages/Landing";
+import SignIn from "./pages/SignIn";
+import Markets from "./pages/Markets";
+import Platform from "./pages/Platform";
 import RegisterStep1 from "./pages/RegisterStep1";
 import RegisterStep2 from "./pages/RegisterStep2";
 import RegisterStep3 from "./pages/RegisterStep3";
@@ -20,7 +24,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/register" replace />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/markets" element={<Markets />} />
+          <Route path="/platform" element={<Platform />} />
           <Route path="/register" element={<RegisterStep1 />} />
           <Route path="/register/step-2" element={<RegisterStep2 />} />
           <Route path="/register/step-3" element={<RegisterStep3 />} />
