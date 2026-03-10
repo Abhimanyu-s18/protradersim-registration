@@ -7,6 +7,8 @@ import RegisterStep1 from "./pages/RegisterStep1";
 import RegisterStep2 from "./pages/RegisterStep2";
 import RegisterStep3 from "./pages/RegisterStep3";
 import RegisterStep4 from "./pages/RegisterStep4";
+import RegisterSuccess from "./pages/RegisterSuccess";
+import RegisterReview from "./pages/RegisterReview";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +25,8 @@ const App = () => (
           <Route path="/register/step-2" element={<RegisterStep2 />} />
           <Route path="/register/step-3" element={<RegisterStep3 />} />
           <Route path="/register/step-4" element={<RegisterStep4 />} />
+          <Route path="/register/success" element={<RegisterSuccess />} />
+          <Route path="/register/review" element={<RegisterReview />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
