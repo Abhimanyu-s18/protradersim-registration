@@ -8,6 +8,9 @@ import SignIn from "./pages/SignIn";
 import ForgotPassword from "./pages/ForgotPassword";
 import AccountPending from "./pages/AccountPending";
 import Dashboard from "./pages/Dashboard";
+import DashboardMarkets from "./pages/DashboardMarkets";
+import DashboardOrders from "./pages/DashboardOrders";
+import DashboardPositions from "./pages/DashboardPositions";
 import Markets from "./pages/Markets";
 import Platform from "./pages/Platform";
 import RegisterStep1 from "./pages/RegisterStep1";
@@ -33,6 +36,9 @@ const App = () => (
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account-pending" element={<AccountPending />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/markets" element={<DashboardMarkets />} />
+          <Route path="/dashboard/orders" element={<DashboardOrders />} />
+          <Route path="/dashboard/positions" element={<DashboardPositions />} />
           <Route path="/markets" element={<Markets />} />
           <Route path="/platform" element={<Platform />} />
           <Route path="/register" element={<RegisterStep1 />} />
