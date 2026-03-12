@@ -47,7 +47,16 @@ export interface Position {
   marginUsed: number;
   leverage: number;
   openedAt: number;
+  closedAt?: number;
+  exitPrice?: number;
+  realizedPnl?: number;
   status: "Open" | "Closed";
+}
+
+export interface AccountState {
+  balance: number;
+  realizedPnl: number;
+  startingBalance: number;
 }
 
 // ── Mock Instruments ──
@@ -113,12 +122,159 @@ const KEYS = {
   watchlist: "pts_watchlist",
   orders: "pts_orders",
   positions: "pts_positions",
-  balance: "pts_balance",
+  account: "pts_account",
 };
+
+const DEFAULT_STARTING_BALANCE = 10000;
 
 export function getInstruments(): Instrument[] {
   return [...BASE_INSTRUMENTS];
 }
+
+// ── Account State ──
+
+export function getAccount(): AccountState {
+  try {
+    const raw = localStorage.getItem(KEYS.account);
+    if (raw) return JSON.parse(raw);
+  } catch { /* fallthrough */ }
+  return { balance: DEFAULT_STARTING_BALANCE, realizedPnl: 0, startingBalance: DEFAULT_STARTING_BALANCE };
+}
+
+export function saveAccount(account: AccountState) {
+  localStorage.setItem(KEYS.account, JSON.stringify(account));
+}
+
+export function resetAccount(startingBalance?: number) {
+  const bal = startingBalance ?? DEFAULT_STARTING_BALANCE;
+  const account: AccountState = { balance: bal, realizedPnl: 0, startingBalance: bal };
+  saveAccount(account);
+  localStorage.removeItem(KEYS.positions);
+  localStorage.removeItem(KEYS.orders);
+  return account;
+}
+
+// Legacy compat
+export function getBalance(): number {
+  return getAccount().balance;
+}
+
+export function setBalance(bal: number) {
+  const acc = getAccount();
+  acc.balance = bal;
+  saveAccount(acc);
+}
+
+// ── Account Metrics Calculator ──
+
+export interface AccountMetrics {
+  balance: number;
+  unrealizedPnl: number;
+  realizedPnl: number;
+  equity: number;
+  marginUsed: number;
+  freeMargin: number;
+  marginLevel: number; // percentage, Infinity if no margin used
+  totalExposure: number;
+  availableBuyingPower: number;
+  exposureByClass: Record<string, number>;
+  largestPosition: Position | null;
+  marginWarning: "none" | "warning" | "critical";
+}
+
+export function calculateMetrics(instruments: Instrument[], positions: Position[]): AccountMetrics {
+  const account = getAccount();
+  const openPositions = positions.filter((p) => p.status === "Open");
+
+  let unrealizedPnl = 0;
+  let marginUsed = 0;
+  let totalExposure = 0;
+  const exposureByClass: Record<string, number> = {};
+  let largestPosition: Position | null = null;
+  let largestExposure = 0;
+
+  for (const pos of openPositions) {
+    const inst = instruments.find((i) => i.symbol === pos.symbol);
+    if (!inst) continue;
+
+    const currentPrice = pos.side === "Buy" ? inst.bid : inst.ask;
+    const pnl = pos.side === "Buy"
+      ? (currentPrice - pos.entryPrice) * pos.size * inst.lotSize
+      : (pos.entryPrice - currentPrice) * pos.size * inst.lotSize;
+
+    unrealizedPnl += pnl;
+    marginUsed += pos.marginUsed;
+
+    const notional = currentPrice * pos.size * inst.lotSize;
+    totalExposure += notional;
+
+    const cls = inst.assetClass;
+    exposureByClass[cls] = (exposureByClass[cls] || 0) + notional;
+
+    if (notional > largestExposure) {
+      largestExposure = notional;
+      largestPosition = { ...pos, currentPrice, pnl };
+    }
+  }
+
+  const equity = account.balance + unrealizedPnl;
+  const freeMargin = equity - marginUsed;
+  const marginLevel = marginUsed > 0 ? (equity / marginUsed) * 100 : Infinity;
+
+  let marginWarning: "none" | "warning" | "critical" = "none";
+  if (marginLevel <= 100) marginWarning = "critical";
+  else if (marginLevel <= 150) marginWarning = "warning";
+
+  return {
+    balance: account.balance,
+    unrealizedPnl,
+    realizedPnl: account.realizedPnl,
+    equity,
+    marginUsed,
+    freeMargin,
+    marginLevel,
+    totalExposure,
+    availableBuyingPower: Math.max(0, freeMargin),
+    exposureByClass,
+    largestPosition,
+    marginWarning,
+  };
+}
+
+// Estimate post-trade metrics
+export function estimatePostTradeMetrics(
+  instruments: Instrument[],
+  positions: Position[],
+  newMargin: number,
+  newNotional: number,
+  assetClass: string,
+): AccountMetrics {
+  const current = calculateMetrics(instruments, positions);
+  const newMarginUsed = current.marginUsed + newMargin;
+  const newEquity = current.equity; // equity unchanged at order time
+  const newFreeMargin = newEquity - newMarginUsed;
+  const newMarginLevel = newMarginUsed > 0 ? (newEquity / newMarginUsed) * 100 : Infinity;
+  const newExposure = current.totalExposure + newNotional;
+  const newExposureByClass = { ...current.exposureByClass };
+  newExposureByClass[assetClass] = (newExposureByClass[assetClass] || 0) + newNotional;
+
+  let marginWarning: "none" | "warning" | "critical" = "none";
+  if (newMarginLevel <= 100) marginWarning = "critical";
+  else if (newMarginLevel <= 150) marginWarning = "warning";
+
+  return {
+    ...current,
+    marginUsed: newMarginUsed,
+    freeMargin: newFreeMargin,
+    marginLevel: newMarginLevel,
+    totalExposure: newExposure,
+    availableBuyingPower: Math.max(0, newFreeMargin),
+    exposureByClass: newExposureByClass,
+    marginWarning,
+  };
+}
+
+// ── Watchlist ──
 
 export function getWatchlist(): string[] {
   try {
@@ -138,6 +294,8 @@ export function toggleWatchlist(symbol: string): string[] {
   return next;
 }
 
+// ── Orders ──
+
 export function getOrders(): Order[] {
   try {
     const raw = localStorage.getItem(KEYS.orders);
@@ -150,6 +308,8 @@ export function saveOrder(order: Order) {
   orders.unshift(order);
   localStorage.setItem(KEYS.orders, JSON.stringify(orders));
 }
+
+// ── Positions ──
 
 export function getPositions(): Position[] {
   try {
@@ -164,22 +324,22 @@ export function savePosition(position: Position) {
   localStorage.setItem(KEYS.positions, JSON.stringify(positions));
 }
 
-export function closePosition(id: string) {
+export function closePosition(id: string, exitPrice: number, realizedPnl: number) {
   const positions = getPositions();
-  const updated = positions.map((p) => (p.id === id ? { ...p, status: "Closed" as const } : p));
+  const updated = positions.map((p) =>
+    p.id === id
+      ? { ...p, status: "Closed" as const, closedAt: Date.now(), exitPrice, realizedPnl }
+      : p,
+  );
   localStorage.setItem(KEYS.positions, JSON.stringify(updated));
+
+  // Update account
+  const account = getAccount();
+  account.balance += realizedPnl;
+  account.realizedPnl += realizedPnl;
+  saveAccount(account);
+
   return updated;
-}
-
-export function getBalance(): number {
-  try {
-    const raw = localStorage.getItem(KEYS.balance);
-    return raw ? parseFloat(raw) : 100000;
-  } catch { return 100000; }
-}
-
-export function setBalance(bal: number) {
-  localStorage.setItem(KEYS.balance, bal.toString());
 }
 
 export function generateId(): string {
@@ -188,4 +348,11 @@ export function generateId(): string {
 
 export function getInstrumentBySymbol(symbol: string): Instrument | undefined {
   return BASE_INSTRUMENTS.find((i) => i.symbol === symbol);
+}
+
+export function clearAllData() {
+  localStorage.removeItem(KEYS.positions);
+  localStorage.removeItem(KEYS.orders);
+  localStorage.removeItem(KEYS.watchlist);
+  localStorage.removeItem(KEYS.account);
 }

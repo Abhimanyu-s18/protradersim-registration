@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
-import { Position, getPositions, closePosition, getBalance, setBalance, getInstruments, simulatePriceTick } from "@/lib/trading-store";
+import { Position, getPositions, closePosition, getInstruments, simulatePriceTick } from "@/lib/trading-store";
 import { Button } from "@/components/ui/button";
 import DashboardShell from "@/components/DashboardShell";
 import { Briefcase } from "lucide-react";
+
+const fmt = (n: number, d = 2) =>
+  `$${n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 
 export default function DashboardPositions() {
   const [positions, setPositions] = useState<Position[]>(getPositions);
@@ -35,8 +38,12 @@ export default function DashboardPositions() {
   const handleClose = (id: string) => {
     const pos = enriched.find((p) => p.id === id);
     if (!pos) return;
-    closePosition(id);
-    setBalance(getBalance() + pos.marginUsed + pos.pnl);
+    const inst = instruments.find((i) => i.symbol === pos.symbol);
+    const exitPrice = inst ? (pos.side === "Buy" ? inst.bid : inst.ask) : pos.currentPrice;
+    const realizedPnl = pos.pnl;
+
+    // closePosition now handles realized PnL settlement and margin return
+    closePosition(id, exitPrice, pos.marginUsed + realizedPnl);
     setPositions(getPositions());
   };
 
@@ -59,16 +66,23 @@ export default function DashboardPositions() {
             <div className="py-16 text-center">
               <Briefcase className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
               <p className="text-sm text-muted-foreground">No {tab} positions</p>
-              <p className="text-xs text-muted-foreground mt-1">Execute a simulated market order to open a position</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {tab === "open" ? "Execute a simulated market order to open a position" : "Closed positions will appear here after settlement"}
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border/50">
-                    {["Symbol", "Side", "Size", "Entry", "Current", "PnL", "Margin", ...(tab === "open" ? [""] : [])].map((h) => (
-                      <th key={h} className="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{h}</th>
-                    ))}
+                    {tab === "open"
+                      ? ["Symbol", "Side", "Size", "Entry", "Current", "PnL", "Margin", ""].map((h) => (
+                          <th key={h} className="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{h}</th>
+                        ))
+                      : ["Symbol", "Side", "Size", "Entry", "Exit", "Realised PnL", "Closed"].map((h) => (
+                          <th key={h} className="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{h}</th>
+                        ))
+                    }
                   </tr>
                 </thead>
                 <tbody>
@@ -80,21 +94,35 @@ export default function DashboardPositions() {
                       </td>
                       <td className="px-4 py-3 font-mono text-foreground">{p.size}</td>
                       <td className="px-4 py-3 font-mono text-foreground">{p.entryPrice.toFixed(2)}</td>
-                      <td className="px-4 py-3 font-mono text-foreground">{p.currentPrice.toFixed(2)}</td>
-                      <td className="px-4 py-3">
-                        <span className={`font-mono font-medium ${p.pnl >= 0 ? "text-success" : "text-destructive"}`}>
-                          {p.pnl >= 0 ? "+" : ""}${p.pnl.toFixed(2)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 font-mono text-muted-foreground">${p.marginUsed.toFixed(2)}</td>
-                      {tab === "open" && (
-                        <td className="px-4 py-3">
-                          <Button size="sm" variant="outline"
-                            className="h-7 text-xs border-destructive/30 text-destructive hover:bg-destructive/10"
-                            onClick={() => handleClose(p.id)}>
-                            Close
-                          </Button>
-                        </td>
+                      {tab === "open" ? (
+                        <>
+                          <td className="px-4 py-3 font-mono text-foreground">{p.currentPrice.toFixed(2)}</td>
+                          <td className="px-4 py-3">
+                            <span className={`font-mono font-medium ${p.pnl >= 0 ? "text-success" : "text-destructive"}`}>
+                              {p.pnl >= 0 ? "+" : ""}{fmt(p.pnl)}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 font-mono text-muted-foreground">{fmt(p.marginUsed)}</td>
+                          <td className="px-4 py-3">
+                            <Button size="sm" variant="outline"
+                              className="h-7 text-xs border-destructive/30 text-destructive hover:bg-destructive/10"
+                              onClick={() => handleClose(p.id)}>
+                              Close
+                            </Button>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="px-4 py-3 font-mono text-foreground">{(p.exitPrice ?? p.currentPrice).toFixed(2)}</td>
+                          <td className="px-4 py-3">
+                            <span className={`font-mono font-medium ${(p.realizedPnl ?? 0) >= 0 ? "text-success" : "text-destructive"}`}>
+                              {(p.realizedPnl ?? 0) >= 0 ? "+" : ""}{fmt(p.realizedPnl ?? 0)}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-xs text-muted-foreground font-mono">
+                            {p.closedAt ? new Date(p.closedAt).toLocaleString() : "—"}
+                          </td>
+                        </>
                       )}
                     </tr>
                   ))}
