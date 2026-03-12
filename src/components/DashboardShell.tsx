@@ -8,11 +8,11 @@ import {
 const navItems = [
   { label: "Overview", icon: LayoutDashboard, path: "/dashboard" },
   { label: "Markets", icon: BarChart3, path: "/dashboard/markets" },
-  { label: "Trade Simulator", icon: LineChart, path: "/dashboard" },
+  { label: "Trade Simulator", icon: LineChart, path: "/dashboard/markets" },
   { label: "Positions", icon: Briefcase, path: "/dashboard/positions" },
   { label: "Orders", icon: ListOrdered, path: "/dashboard/orders" },
   { label: "Performance", icon: Target, path: "/dashboard" },
-  { label: "Risk", icon: ShieldCheck, path: "/dashboard" },
+  { label: "Risk", icon: ShieldCheck, path: "/dashboard/risk" },
   { label: "Profile", icon: User, path: "/dashboard" },
 ];
 

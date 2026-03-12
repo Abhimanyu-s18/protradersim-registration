@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ShieldCheck } from "lucide-react";
 import {
-  Instrument, generateId, saveOrder, savePosition, getBalance, setBalance,
+  Instrument, generateId, saveOrder, savePosition, getBalance, getAccount, saveAccount,
+  getPositions, getInstruments, calculateMetrics, estimatePostTradeMetrics,
 } from "@/lib/trading-store";
 
 interface Props {
@@ -17,6 +18,9 @@ interface Props {
 }
 
 const LEVERAGE_OPTIONS = [1, 5, 10, 20, 50, 100, 200, 500];
+
+const fmt = (n: number) => `$${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+const pctFmt = (n: number) => (n === Infinity ? "∞" : `${n.toFixed(1)}%`);
 
 export default function TradeTicket({ instrument, open, onOpenChange, onOrderPlaced }: Props) {
   const [side, setSide] = useState<"Buy" | "Sell">("Buy");
@@ -41,6 +45,20 @@ export default function TradeTicket({ instrument, open, onOpenChange, onOrderPla
     const spreadCost = inst.spread * qty * inst.lotSize;
     return { notional, margin, spreadCost };
   }, [inst, qty, price, lev]);
+
+  // Post-trade risk preview
+  const postTradeMetrics = useMemo(() => {
+    if (!calc || !inst) return null;
+    const positions = getPositions();
+    const instruments = getInstruments();
+    return estimatePostTradeMetrics(instruments, positions, calc.margin, calc.notional, inst.assetClass);
+  }, [calc, inst]);
+
+  const currentMetrics = useMemo(() => {
+    const positions = getPositions();
+    const instruments = getInstruments();
+    return calculateMetrics(instruments, positions);
+  }, [open]); // recalc when dialog opens
 
   const availableLeverages = LEVERAGE_OPTIONS.filter((l) => inst ? l <= inst.leverageMax : true);
 
@@ -82,7 +100,10 @@ export default function TradeTicket({ instrument, open, onOpenChange, onOrderPla
           pnl: 0, marginUsed: calc.margin, leverage: lev,
           openedAt: Date.now(), status: "Open",
         });
-        setBalance(bal - calc.margin);
+        // Deduct margin from balance
+        const account = getAccount();
+        account.balance -= calc.margin;
+        saveAccount(account);
       }
 
       setSubmitting(false);
@@ -95,9 +116,12 @@ export default function TradeTicket({ instrument, open, onOpenChange, onOrderPla
 
   if (!inst) return null;
 
+  const insufficientMargin = calc ? calc.margin > getBalance() : false;
+  const willStressAccount = postTradeMetrics && postTradeMetrics.marginWarning !== "none";
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-card border-border/50">
+      <DialogContent className="sm:max-w-md bg-card border-border/50 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-foreground flex items-center gap-2">
             Trade <span className="font-mono text-primary">{inst.symbol}</span>
@@ -202,23 +226,68 @@ export default function TradeTicket({ instrument, open, onOpenChange, onOrderPla
               <div className="rounded-lg bg-muted/20 p-3 space-y-1.5 text-xs">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Notional Exposure</span>
-                  <span className="font-mono text-foreground">${calc.notional.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                  <span className="font-mono text-foreground">{fmt(calc.notional)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Estimated Margin</span>
-                  <span className="font-mono text-foreground">${calc.margin.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                  <span className="font-mono text-foreground">{fmt(calc.margin)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Est. Spread Cost</span>
-                  <span className="font-mono text-foreground">${calc.spreadCost.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                  <span className="font-mono text-foreground">{fmt(calc.spreadCost)}</span>
                 </div>
               </div>
             )}
 
-            {calc && calc.margin > getBalance() && (
+            {/* Post-trade risk impact */}
+            {postTradeMetrics && calc && (
+              <div className="rounded-lg bg-muted/10 border border-border/30 p-3 space-y-1.5 text-xs">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
+                  <ShieldCheck className="h-3 w-3" /> Post-Trade Account Impact
+                </p>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Margin Used</span>
+                  <span className="font-mono text-foreground">
+                    {fmt(currentMetrics.marginUsed)} → {fmt(postTradeMetrics.marginUsed)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Free Margin</span>
+                  <span className={`font-mono ${postTradeMetrics.freeMargin < 0 ? "text-destructive" : "text-foreground"}`}>
+                    {fmt(currentMetrics.freeMargin)} → {fmt(postTradeMetrics.freeMargin)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Margin Level</span>
+                  <span className={`font-mono ${
+                    postTradeMetrics.marginWarning === "critical" ? "text-destructive" :
+                    postTradeMetrics.marginWarning === "warning" ? "text-primary" : "text-foreground"
+                  }`}>
+                    {pctFmt(currentMetrics.marginLevel)} → {pctFmt(postTradeMetrics.marginLevel)}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Warnings */}
+            {insufficientMargin && (
               <p className="text-xs text-destructive flex items-center gap-1.5">
                 <AlertTriangle className="h-3 w-3" /> Insufficient simulated margin
               </p>
+            )}
+
+            {!insufficientMargin && willStressAccount && (
+              <div className={`rounded-lg px-3 py-2 text-xs flex items-center gap-1.5 ${
+                postTradeMetrics?.marginWarning === "critical"
+                  ? "bg-destructive/10 border border-destructive/20 text-destructive"
+                  : "bg-primary/10 border border-primary/20 text-primary"
+              }`}>
+                <AlertTriangle className="h-3 w-3 shrink-0" />
+                {postTradeMetrics?.marginWarning === "critical"
+                  ? "This trade would bring your account into critical margin territory."
+                  : "This trade would reduce your margin level below the 150% warning threshold."
+                }
+              </div>
             )}
 
             {/* Risk notice */}
@@ -228,7 +297,7 @@ export default function TradeTicket({ instrument, open, onOpenChange, onOrderPla
 
             <Button
               onClick={handleSubmit}
-              disabled={submitting || qty <= 0 || (calc ? calc.margin > getBalance() : true)}
+              disabled={submitting || qty <= 0 || insufficientMargin}
               className="w-full gold-gradient text-primary-foreground font-semibold"
             >
               {submitting ? "Processing…" : `Place ${orderType} ${side} Order`}
