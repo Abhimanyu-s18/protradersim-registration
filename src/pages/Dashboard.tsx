@@ -303,6 +303,73 @@ const Dashboard = () => {
             </div>
           </div>
         )}
+
+        {/* Performance Snapshot */}
+        <div className="glass-card rounded-xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Target className="h-4 w-4 text-primary" /> Performance
+            </h3>
+            <button onClick={() => navigate("/dashboard/performance")} className="text-[10px] uppercase tracking-wider font-semibold text-primary hover:underline">
+              Details →
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-3 text-center">
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Win Rate</p>
+              <p className={`text-lg font-bold font-mono ${perf.winRate >= 50 ? "text-success" : "text-destructive"}`}>{perf.winRate.toFixed(0)}%</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Total Return</p>
+              <p className={`text-lg font-bold font-mono ${perf.totalReturn >= 0 ? "text-success" : "text-destructive"}`}>{perf.totalReturn >= 0 ? "+" : ""}{perf.totalReturn.toFixed(2)}%</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Trades</p>
+              <p className="text-lg font-bold font-mono text-foreground">{perf.totalTrades}</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Max DD</p>
+              <p className={`text-lg font-bold font-mono ${perf.maxDrawdown > 5 ? "text-destructive" : "text-foreground"}`}>{perf.maxDrawdown.toFixed(1)}%</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Challenge Progress */}
+        <div className="glass-card rounded-xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-primary" /> Challenge
+            </h3>
+            <button onClick={() => navigate("/dashboard/challenge")} className="text-[10px] uppercase tracking-wider font-semibold text-primary hover:underline">
+              Details →
+            </button>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Status</span>
+              <span className={`font-semibold ${
+                challenge.status === "passed" ? "text-success" :
+                challenge.status === "failed" ? "text-destructive" :
+                challenge.status === "in_progress" ? "text-primary" : "text-muted-foreground"
+              }`}>
+                {challenge.status === "not_started" ? "Not Started" :
+                 challenge.status === "in_progress" ? "In Progress" :
+                 challenge.status === "passed" ? "Passed" : "Failed"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Profit Target</span>
+              <span className="font-mono text-foreground">{challenge.progressPercent.toFixed(0)}%</span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-muted/50 overflow-hidden">
+              <div className={`h-full rounded-full ${challenge.status === "passed" ? "bg-success" : challenge.status === "failed" ? "bg-destructive" : "bg-primary/60"}`} style={{ width: `${Math.min(100, challenge.progressPercent)}%` }} />
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Trading Days</span>
+              <span className="font-mono text-foreground">{challenge.tradingDays} / {challenge.rules.minTradingDays}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <TradeTicket instrument={tradeInstrument} open={ticketOpen} onOpenChange={setTicketOpen} />
