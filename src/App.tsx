@@ -12,6 +12,8 @@ import DashboardMarkets from "./pages/DashboardMarkets";
 import DashboardOrders from "./pages/DashboardOrders";
 import DashboardPositions from "./pages/DashboardPositions";
 import DashboardRisk from "./pages/DashboardRisk";
+import DashboardPerformance from "./pages/DashboardPerformance";
+import DashboardChallenge from "./pages/DashboardChallenge";
 import Markets from "./pages/Markets";
 import Platform from "./pages/Platform";
 import RegisterStep1 from "./pages/RegisterStep1";
