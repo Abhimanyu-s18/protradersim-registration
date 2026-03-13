@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Settings2, RotateCcw, Trash2 } from "lucide-react";
+import { Settings2, RotateCcw, Trash2, TrendingUp, TrendingDown, Trophy, XCircle } from "lucide-react";
 import { AccountState as AuthAccountState, getDemoState, setDemoState } from "@/lib/auth-store";
 import { resetAccount, clearAllData, getAccount, saveAccount } from "@/lib/trading-store";
+import { resetChallenge, saveChallengeStatus } from "@/lib/analytics-engine";
 
 const states: { value: AuthAccountState | "auto"; label: string }[] = [
   { value: "auto", label: "Auto (from registration)" },
