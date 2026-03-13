@@ -11,7 +11,8 @@ const navItems = [
   { label: "Trade Simulator", icon: LineChart, path: "/dashboard/markets" },
   { label: "Positions", icon: Briefcase, path: "/dashboard/positions" },
   { label: "Orders", icon: ListOrdered, path: "/dashboard/orders" },
-  { label: "Performance", icon: Target, path: "/dashboard" },
+  { label: "Performance", icon: Target, path: "/dashboard/performance" },
+  { label: "Challenge", icon: Trophy, path: "/dashboard/challenge" },
   { label: "Risk", icon: ShieldCheck, path: "/dashboard/risk" },
   { label: "Profile", icon: User, path: "/dashboard" },
 ];

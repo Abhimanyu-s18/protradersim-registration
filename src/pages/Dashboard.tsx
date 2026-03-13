@@ -98,6 +98,9 @@ const Dashboard = () => {
         <Button variant="outline" className="border-border/50" onClick={() => navigate("/dashboard/positions")}>
           View Positions
         </Button>
+        <Button variant="outline" className="border-border/50" onClick={() => navigate("/dashboard/performance")}>
+          <Target className="h-4 w-4 mr-2" /> Performance
+        </Button>
         <Button variant="outline" className="border-border/50" onClick={() => navigate("/dashboard/risk")}>
           <ShieldCheck className="h-4 w-4 mr-2" /> Risk
         </Button>
