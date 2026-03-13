@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Activity, Eye, ShieldCheck, AlertTriangle, LineChart,
-  TrendingUp, TrendingDown, ListOrdered, Briefcase, BarChart3,
+  TrendingUp, TrendingDown, ListOrdered, Briefcase, BarChart3, Target, Trophy,
 } from "lucide-react";
 import DashboardShell from "@/components/DashboardShell";
 import WatchlistWidget from "@/components/WatchlistWidget";
