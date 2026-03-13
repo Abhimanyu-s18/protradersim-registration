@@ -37,6 +37,8 @@ const Dashboard = () => {
   }, []);
 
   const m = calculateMetrics(instruments, positions);
+  const perf = calculatePerformanceMetrics();
+  const challenge = evaluateChallenge();
   const openPositions = positions.filter((p) => p.status === "Open");
   const closedPositions = positions.filter((p) => p.status === "Closed");
 
