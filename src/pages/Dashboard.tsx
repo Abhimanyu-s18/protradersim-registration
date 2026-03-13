@@ -12,6 +12,7 @@ import {
   Instrument, getInstruments, simulatePriceTick, getWatchlist,
   getPositions, getOrders, Position, Order, calculateMetrics, AccountMetrics,
 } from "@/lib/trading-store";
+import { calculatePerformanceMetrics, evaluateChallenge } from "@/lib/analytics-engine";
 
 const fmt = (n: number, d = 2) =>
   `$${n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d })}`;
