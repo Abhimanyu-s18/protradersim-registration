@@ -328,9 +328,8 @@ export function resetChallenge() {
 // ── Seed Demo Data ──
 
 export function seedWinningTrades() {
-  const { saveOrder, savePosition, getAccount: ga, saveAccount: sa, generateId, getInstrumentBySymbol } = require("./trading-store");
   const symbols = ["EUR/USD", "AAPL", "XAU/USD", "US500", "BTC/USD"];
-  const account = ga();
+  let account = getAccount();
 
   for (const sym of symbols) {
     const inst = getInstrumentBySymbol(sym);
@@ -342,7 +341,8 @@ export function seedWinningTrades() {
     const margin = (entryPrice * 1 * inst.lotSize) / inst.leverageMax;
     const ts = Date.now() - Math.random() * 86400000 * 5;
 
-    sa({ ...account, balance: account.balance + pnl, realizedPnl: account.realizedPnl + pnl });
+    account = { ...account, balance: account.balance + pnl, realizedPnl: account.realizedPnl + pnl };
+    saveAccount(account);
 
     saveOrder({
       id, symbol: sym, instrumentName: inst.name, side: "Buy", type: "Market",
