@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   TrendingUp, LayoutDashboard, BarChart3, LineChart, Briefcase,
-  ListOrdered, Target, ShieldCheck, User, LogOut, Menu, X, Activity,
+  ListOrdered, Target, ShieldCheck, User, LogOut, Menu, X, Activity, Trophy,
 } from "lucide-react";
 
 const navItems = [
