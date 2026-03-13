@@ -1,7 +1,10 @@
 // Performance analytics and challenge rule engine
 // Designed to be replaceable with a real backend later
 
-import { Position, getPositions, getAccount, getInstruments, AccountState } from "./trading-store";
+import {
+  Position, getPositions, getAccount, getInstruments, AccountState,
+  saveOrder, savePosition, saveAccount, generateId, getInstrumentBySymbol,
+} from "./trading-store";
 
 // ── Performance Metrics ──
 
