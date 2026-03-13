@@ -39,6 +39,33 @@ const DemoStateSwitcher = () => {
     const account = getAccount();
     account.balance = 50;
     saveAccount(account);
+  };
+
+  const handleSeedWins = async () => {
+    const { seedWinningTrades } = await import("@/lib/analytics-engine");
+    seedWinningTrades();
+    window.location.reload();
+  };
+
+  const handleSeedLosses = async () => {
+    const { seedLosingTrades } = await import("@/lib/analytics-engine");
+    seedLosingTrades();
+    window.location.reload();
+  };
+
+  const handleSimChallengePass = () => {
+    saveChallengeStatus("passed");
+    window.location.reload();
+  };
+
+  const handleSimChallengeFail = () => {
+    saveChallengeStatus("failed");
+    window.location.reload();
+  };
+
+  const handleResetPerformance = () => {
+    resetChallenge();
+    clearAllData();
     window.location.reload();
   };
 
