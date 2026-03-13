@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   TrendingUp, LayoutDashboard, BarChart3, LineChart, Briefcase,
-  ListOrdered, Target, ShieldCheck, User, LogOut, Menu, X, Activity,
+  ListOrdered, Target, ShieldCheck, User, LogOut, Menu, X, Activity, Trophy,
 } from "lucide-react";
 
 const navItems = [
@@ -11,7 +11,8 @@ const navItems = [
   { label: "Trade Simulator", icon: LineChart, path: "/dashboard/markets" },
   { label: "Positions", icon: Briefcase, path: "/dashboard/positions" },
   { label: "Orders", icon: ListOrdered, path: "/dashboard/orders" },
-  { label: "Performance", icon: Target, path: "/dashboard" },
+  { label: "Performance", icon: Target, path: "/dashboard/performance" },
+  { label: "Challenge", icon: Trophy, path: "/dashboard/challenge" },
   { label: "Risk", icon: ShieldCheck, path: "/dashboard/risk" },
   { label: "Profile", icon: User, path: "/dashboard" },
 ];

@@ -12,6 +12,8 @@ import DashboardMarkets from "./pages/DashboardMarkets";
 import DashboardOrders from "./pages/DashboardOrders";
 import DashboardPositions from "./pages/DashboardPositions";
 import DashboardRisk from "./pages/DashboardRisk";
+import DashboardPerformance from "./pages/DashboardPerformance";
+import DashboardChallenge from "./pages/DashboardChallenge";
 import Markets from "./pages/Markets";
 import Platform from "./pages/Platform";
 import RegisterStep1 from "./pages/RegisterStep1";
@@ -41,6 +43,8 @@ const App = () => (
           <Route path="/dashboard/orders" element={<DashboardOrders />} />
           <Route path="/dashboard/positions" element={<DashboardPositions />} />
           <Route path="/dashboard/risk" element={<DashboardRisk />} />
+          <Route path="/dashboard/performance" element={<DashboardPerformance />} />
+          <Route path="/dashboard/challenge" element={<DashboardChallenge />} />
           <Route path="/markets" element={<Markets />} />
           <Route path="/platform" element={<Platform />} />
           <Route path="/register" element={<RegisterStep1 />} />
