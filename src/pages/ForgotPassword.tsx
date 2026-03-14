@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { TrendingUp, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { TrendingUp, ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +15,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setError(null);
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Please enter a valid email address.");
+      setError('Please enter a valid email address.');
       return;
     }
     setLoading(true);
@@ -35,7 +35,9 @@ const ForgotPassword = () => {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg gold-gradient">
               <TrendingUp className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">ProTraderSim</span>
+            <span className="text-xl font-bold text-foreground">
+              ProTraderSim
+            </span>
           </Link>
         </div>
 
@@ -50,11 +52,15 @@ const ForgotPassword = () => {
               <div className="flex items-start gap-3 rounded-lg border border-success/30 bg-success/10 px-4 py-4">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
                 <p className="text-sm text-foreground">
-                  If an account exists for <span className="font-medium">{email}</span>, a password reset link has been sent.
+                  If an account exists for{' '}
+                  <span className="font-medium">{email}</span>, a password reset
+                  link has been sent.
                 </p>
               </div>
               <Link to="/sign-in">
-                <Button variant="outline" className="w-full mt-2">Return to Sign In</Button>
+                <Button variant="outline" className="w-full mt-2">
+                  Return to Sign In
+                </Button>
               </Link>
             </div>
           ) : (
@@ -71,23 +77,40 @@ const ForgotPassword = () => {
                   disabled={loading}
                 />
               </div>
-              {error && (
-                <p className="text-xs text-destructive">{error}</p>
-              )}
-              <Button type="submit" className="w-full gold-gradient text-primary-foreground font-semibold" size="lg" disabled={loading}>
-                {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…</> : "Send Reset Link"}
+              {error && <p className="text-xs text-destructive">{error}</p>}
+              <Button
+                type="submit"
+                className="w-full gold-gradient text-primary-foreground font-semibold"
+                size="lg"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…
+                  </>
+                ) : (
+                  'Send Reset Link'
+                )}
               </Button>
             </form>
           )}
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Remember your password?{" "}
-            <Link to="/sign-in" className="font-medium text-primary hover:underline">Sign In</Link>
+            Remember your password?{' '}
+            <Link
+              to="/sign-in"
+              className="font-medium text-primary hover:underline"
+            >
+              Sign In
+            </Link>
           </p>
         </div>
 
         <div className="mt-6 text-center">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+          >
             <ArrowLeft className="h-4 w-4" /> Back to Home
           </Link>
         </div>

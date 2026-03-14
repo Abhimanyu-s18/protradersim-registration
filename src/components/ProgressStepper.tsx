@@ -1,11 +1,11 @@
-import { Check, Lock } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Check, Lock } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const steps = [
-  { label: "Personal Details", number: 1 },
-  { label: "Address Details", number: 2 },
-  { label: "Trading Profile", number: 3 },
-  { label: "Verification", number: 4 },
+  { label: 'Personal Details', number: 1 },
+  { label: 'Address Details', number: 2 },
+  { label: 'Trading Profile', number: 3 },
+  { label: 'Verification', number: 4 },
 ];
 
 interface ProgressStepperProps {
@@ -25,10 +25,12 @@ const ProgressStepper = ({ currentStep }: ProgressStepperProps) => {
             <div className="flex flex-col items-center gap-1.5 flex-1">
               <div
                 className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-semibold transition-all",
-                  isActive && "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/20",
-                  isCompleted && "border-success bg-success text-success-foreground",
-                  isLocked && "border-border bg-muted text-muted-foreground"
+                  'flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-semibold transition-all',
+                  isActive &&
+                    'border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/20',
+                  isCompleted &&
+                    'border-success bg-success text-success-foreground',
+                  isLocked && 'border-border bg-muted text-muted-foreground'
                 )}
               >
                 {isCompleted ? (
@@ -41,10 +43,10 @@ const ProgressStepper = ({ currentStep }: ProgressStepperProps) => {
               </div>
               <span
                 className={cn(
-                  "text-[11px] font-medium text-center leading-tight hidden sm:block",
-                  isActive && "text-primary",
-                  isCompleted && "text-success",
-                  isLocked && "text-muted-foreground"
+                  'text-[11px] font-medium text-center leading-tight hidden sm:block',
+                  isActive && 'text-primary',
+                  isCompleted && 'text-success',
+                  isLocked && 'text-muted-foreground'
                 )}
               >
                 {step.label}
@@ -53,8 +55,8 @@ const ProgressStepper = ({ currentStep }: ProgressStepperProps) => {
             {i < steps.length - 1 && (
               <div
                 className={cn(
-                  "h-px flex-1 mx-1 mt-[-20px] sm:mt-[-24px]",
-                  isCompleted ? "bg-success" : "bg-border"
+                  'h-px flex-1 mx-1 mt-[-20px] sm:mt-[-24px]',
+                  isCompleted ? 'bg-success' : 'bg-border'
                 )}
               />
             )}

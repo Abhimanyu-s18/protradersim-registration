@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react";
+import { TrendingUp } from 'lucide-react';
 
 const Header = () => {
   return (

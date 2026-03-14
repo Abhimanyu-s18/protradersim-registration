@@ -1,65 +1,76 @@
-import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Header from "@/components/Header";
-import ProgressStepper from "@/components/ProgressStepper";
-import BenefitsPanel from "@/components/BenefitsPanel";
-import { countries } from "@/lib/countries";
-import { loadRegistration, saveStep2, type Step2Data } from "@/lib/registration-store";
-import { ArrowLeft, Loader2, Search, ChevronDown, Upload } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Header from '@/components/Header';
+import ProgressStepper from '@/components/ProgressStepper';
+import BenefitsPanel from '@/components/BenefitsPanel';
+import { countries } from '@/lib/countries';
+import {
+  loadRegistration,
+  saveStep2,
+  type Step2Data,
+} from '@/lib/registration-store';
+import { ArrowLeft, Loader2, Search, ChevronDown, Upload } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 
 const step2Schema = z.object({
-  addressLine1: z.string().trim().min(1, "Address is required").max(200),
+  addressLine1: z.string().trim().min(1, 'Address is required').max(200),
   addressLine2: z.string().max(200).optional(),
-  city: z.string().trim().min(1, "City is required").max(100),
-  state: z.string().trim().min(1, "State / Province is required").max(100),
-  postalCode: z.string().trim().min(1, "Postal code is required").max(20),
-  country: z.string().min(1, "Country is required"),
+  city: z.string().trim().min(1, 'City is required').max(100),
+  state: z.string().trim().min(1, 'State / Province is required').max(100),
+  postalCode: z.string().trim().min(1, 'Postal code is required').max(20),
+  country: z.string().min(1, 'Country is required'),
 });
 
 const RegisterStep2 = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [countrySearch, setCountrySearch] = useState("");
+  const [countrySearch, setCountrySearch] = useState('');
   const [countryOpen, setCountryOpen] = useState(false);
 
   const [form, setForm] = useState<Step2Data>({
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "",
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: '',
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof Step2Data, string>>>({});
-  const [touched, setTouched] = useState<Partial<Record<keyof Step2Data, boolean>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof Step2Data, string>>
+  >({});
+  const [touched, setTouched] = useState<
+    Partial<Record<keyof Step2Data, boolean>>
+  >({});
 
   useEffect(() => {
     const saved = loadRegistration();
     if (!saved?.step1) {
-      navigate("/register");
+      navigate('/register');
       return;
     }
     if (saved.step2) {
       setForm(saved.step2);
     } else {
       // Default country from Step 1
-      setForm((f) => ({ ...f, country: saved.step1.country || "" }));
+      setForm((f) => ({ ...f, country: saved.step1.country || '' }));
     }
   }, [navigate]);
 
   const filteredCountries = useMemo(
-    () => countries.filter((c) => c.toLowerCase().includes(countrySearch.toLowerCase())),
+    () =>
+      countries.filter((c) =>
+        c.toLowerCase().includes(countrySearch.toLowerCase())
+      ),
     [countrySearch]
   );
 
@@ -71,7 +82,10 @@ const RegisterStep2 = () => {
   const validateField = (field: keyof Step2Data, value?: string) => {
     const val = value ?? form[field];
     const partial = { ...form, [field]: val };
-    const result = step2Schema.safeParse({ ...partial, addressLine2: partial.addressLine2 || undefined });
+    const result = step2Schema.safeParse({
+      ...partial,
+      addressLine2: partial.addressLine2 || undefined,
+    });
     if (result.success) {
       setErrors((e) => ({ ...e, [field]: undefined }));
     } else {
@@ -86,17 +100,27 @@ const RegisterStep2 = () => {
   };
 
   const isValid = useMemo(() => {
-    const result = step2Schema.safeParse({ ...form, addressLine2: form.addressLine2 || undefined });
+    const result = step2Schema.safeParse({
+      ...form,
+      addressLine2: form.addressLine2 || undefined,
+    });
     return result.success;
   }, [form]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const allTouched: Partial<Record<keyof Step2Data, boolean>> = {
-      addressLine1: true, city: true, state: true, postalCode: true, country: true,
+      addressLine1: true,
+      city: true,
+      state: true,
+      postalCode: true,
+      country: true,
     };
     setTouched(allTouched);
-    const result = step2Schema.safeParse({ ...form, addressLine2: form.addressLine2 || undefined });
+    const result = step2Schema.safeParse({
+      ...form,
+      addressLine2: form.addressLine2 || undefined,
+    });
     if (!result.success) {
       const fieldErrors: Partial<Record<keyof Step2Data, string>> = {};
       result.error.issues.forEach((i) => {
@@ -110,13 +134,15 @@ const RegisterStep2 = () => {
     await new Promise((r) => setTimeout(r, 1200));
     saveStep2(form);
     setLoading(false);
-    navigate("/register/step-3");
+    navigate('/register/step-3');
   };
 
   const fieldClass = (field: keyof Step2Data) =>
     cn(
-      "h-11 bg-muted/50 border-border/60 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/30",
-      touched[field] && errors[field] && "border-destructive focus:border-destructive focus:ring-destructive/30"
+      'h-11 bg-muted/50 border-border/60 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/30',
+      touched[field] &&
+        errors[field] &&
+        'border-destructive focus:border-destructive focus:ring-destructive/30'
     );
 
   return (
@@ -142,33 +168,44 @@ const RegisterStep2 = () => {
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Address Line 1 */}
               <div className="space-y-1.5">
-                <Label htmlFor="addressLine1" className="text-sm text-foreground">
+                <Label
+                  htmlFor="addressLine1"
+                  className="text-sm text-foreground"
+                >
                   Address Line 1 <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="addressLine1"
                   placeholder="Street address, P.O. box"
                   value={form.addressLine1}
-                  onChange={(e) => update("addressLine1", e.target.value)}
-                  onBlur={() => handleBlur("addressLine1")}
-                  className={fieldClass("addressLine1")}
+                  onChange={(e) => update('addressLine1', e.target.value)}
+                  onBlur={() => handleBlur('addressLine1')}
+                  className={fieldClass('addressLine1')}
                 />
                 {touched.addressLine1 && errors.addressLine1 && (
-                  <p className="text-xs text-destructive">{errors.addressLine1}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.addressLine1}
+                  </p>
                 )}
               </div>
 
               {/* Address Line 2 */}
               <div className="space-y-1.5">
-                <Label htmlFor="addressLine2" className="text-sm text-foreground">
-                  Address Line 2 <span className="text-muted-foreground text-xs">(optional)</span>
+                <Label
+                  htmlFor="addressLine2"
+                  className="text-sm text-foreground"
+                >
+                  Address Line 2{' '}
+                  <span className="text-muted-foreground text-xs">
+                    (optional)
+                  </span>
                 </Label>
                 <Input
                   id="addressLine2"
                   placeholder="Apartment, suite, unit, building, floor"
                   value={form.addressLine2}
-                  onChange={(e) => update("addressLine2", e.target.value)}
-                  className={fieldClass("addressLine2")}
+                  onChange={(e) => update('addressLine2', e.target.value)}
+                  className={fieldClass('addressLine2')}
                 />
               </div>
 
@@ -182,9 +219,9 @@ const RegisterStep2 = () => {
                     id="city"
                     placeholder="City"
                     value={form.city}
-                    onChange={(e) => update("city", e.target.value)}
-                    onBlur={() => handleBlur("city")}
-                    className={fieldClass("city")}
+                    onChange={(e) => update('city', e.target.value)}
+                    onBlur={() => handleBlur('city')}
+                    className={fieldClass('city')}
                   />
                   {touched.city && errors.city && (
                     <p className="text-xs text-destructive">{errors.city}</p>
@@ -199,9 +236,9 @@ const RegisterStep2 = () => {
                     id="state"
                     placeholder="State or province"
                     value={form.state}
-                    onChange={(e) => update("state", e.target.value)}
-                    onBlur={() => handleBlur("state")}
-                    className={fieldClass("state")}
+                    onChange={(e) => update('state', e.target.value)}
+                    onBlur={() => handleBlur('state')}
+                    className={fieldClass('state')}
                   />
                   {touched.state && errors.state && (
                     <p className="text-xs text-destructive">{errors.state}</p>
@@ -218,12 +255,14 @@ const RegisterStep2 = () => {
                   id="postalCode"
                   placeholder="e.g. 10001"
                   value={form.postalCode}
-                  onChange={(e) => update("postalCode", e.target.value)}
-                  onBlur={() => handleBlur("postalCode")}
-                  className={cn(fieldClass("postalCode"), "sm:max-w-[200px]")}
+                  onChange={(e) => update('postalCode', e.target.value)}
+                  onBlur={() => handleBlur('postalCode')}
+                  className={cn(fieldClass('postalCode'), 'sm:max-w-[200px]')}
                 />
                 {touched.postalCode && errors.postalCode && (
-                  <p className="text-xs text-destructive">{errors.postalCode}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.postalCode}
+                  </p>
                 )}
               </div>
 
@@ -238,17 +277,22 @@ const RegisterStep2 = () => {
                       variant="outline"
                       role="combobox"
                       className={cn(
-                        "w-full h-11 justify-between font-normal bg-muted/50 border-border/60",
-                        !form.country && "text-muted-foreground",
-                        touched.country && errors.country && "border-destructive"
+                        'w-full h-11 justify-between font-normal bg-muted/50 border-border/60',
+                        !form.country && 'text-muted-foreground',
+                        touched.country &&
+                          errors.country &&
+                          'border-destructive'
                       )}
-                      onBlur={() => handleBlur("country")}
+                      onBlur={() => handleBlur('country')}
                     >
-                      {form.country || "Select your country"}
+                      {form.country || 'Select your country'}
                       <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border" align="start">
+                  <PopoverContent
+                    className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border"
+                    align="start"
+                  >
                     <div className="flex items-center border-b border-border px-3">
                       <Search className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
                       <input
@@ -260,21 +304,24 @@ const RegisterStep2 = () => {
                     </div>
                     <div className="max-h-60 overflow-y-auto p-1">
                       {filteredCountries.length === 0 && (
-                        <p className="py-4 text-center text-sm text-muted-foreground">No country found.</p>
+                        <p className="py-4 text-center text-sm text-muted-foreground">
+                          No country found.
+                        </p>
                       )}
                       {filteredCountries.map((c) => (
                         <button
                           key={c}
                           type="button"
                           className={cn(
-                            "w-full rounded-md px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground transition-colors",
-                            form.country === c && "bg-primary/10 text-primary font-medium"
+                            'w-full rounded-md px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground transition-colors',
+                            form.country === c &&
+                              'bg-primary/10 text-primary font-medium'
                           )}
                           onClick={() => {
-                            update("country", c);
+                            update('country', c);
                             setCountryOpen(false);
-                            setCountrySearch("");
-                            handleBlur("country");
+                            setCountrySearch('');
+                            handleBlur('country');
                           }}
                         >
                           {c}
@@ -296,8 +343,12 @@ const RegisterStep2 = () => {
                 <div className="flex items-center gap-3 rounded-lg border border-dashed border-border/60 bg-muted/20 p-4 opacity-60 cursor-not-allowed">
                   <Upload className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Upload proof of address in a later step</p>
-                    <p className="text-xs text-muted-foreground/70">Utility bill, bank statement, or government letter</p>
+                    <p className="text-sm text-muted-foreground">
+                      Upload proof of address in a later step
+                    </p>
+                    <p className="text-xs text-muted-foreground/70">
+                      Utility bill, bank statement, or government letter
+                    </p>
                   </div>
                 </div>
               </div>
@@ -317,7 +368,7 @@ const RegisterStep2 = () => {
                       Processing…
                     </>
                   ) : (
-                    "Continue to Trading Profile"
+                    'Continue to Trading Profile'
                   )}
                 </Button>
                 <Button
@@ -327,7 +378,7 @@ const RegisterStep2 = () => {
                   className="w-full"
                   onClick={() => {
                     saveStep2(form);
-                    navigate("/register");
+                    navigate('/register');
                   }}
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -343,8 +394,12 @@ const RegisterStep2 = () => {
               <BenefitsPanel />
               <div className="mt-6 rounded-lg border border-border/40 bg-muted/20 p-4">
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  <span className="font-semibold text-foreground">Secure Setup:</span>{" "}
-                  Your address information is encrypted and used solely for account verification purposes. ProTraderSim never shares your personal data.
+                  <span className="font-semibold text-foreground">
+                    Secure Setup:
+                  </span>{' '}
+                  Your address information is encrypted and used solely for
+                  account verification purposes. ProTraderSim never shares your
+                  personal data.
                 </p>
               </div>
             </div>

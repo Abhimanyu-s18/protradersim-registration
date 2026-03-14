@@ -1,27 +1,46 @@
-import { useState } from "react";
-import { Settings2, RotateCcw, Trash2, TrendingUp, TrendingDown, Trophy, XCircle } from "lucide-react";
-import { AccountState as AuthAccountState, getDemoState, setDemoState } from "@/lib/auth-store";
-import { resetAccount, clearAllData, getAccount, saveAccount } from "@/lib/trading-store";
-import { resetChallenge, saveChallengeStatus } from "@/lib/analytics-engine";
+import { useState } from 'react';
+import {
+  Settings2,
+  RotateCcw,
+  Trash2,
+  TrendingUp,
+  TrendingDown,
+  Trophy,
+  XCircle,
+} from 'lucide-react';
+import {
+  AccountState as AuthAccountState,
+  getDemoState,
+  setDemoState,
+} from '@/lib/auth-store';
+import {
+  resetAccount,
+  clearAllData,
+  getAccount,
+  saveAccount,
+} from '@/lib/trading-store';
+import { resetChallenge, saveChallengeStatus } from '@/lib/analytics-engine';
 
-const states: { value: AuthAccountState | "auto"; label: string }[] = [
-  { value: "auto", label: "Auto (from registration)" },
-  { value: "unregistered", label: "No Account" },
-  { value: "pending_verification", label: "Pending Verification" },
-  { value: "pending_review", label: "Pending Review" },
-  { value: "active", label: "Active Account" },
+const states: { value: AuthAccountState | 'auto'; label: string }[] = [
+  { value: 'auto', label: 'Auto (from registration)' },
+  { value: 'unregistered', label: 'No Account' },
+  { value: 'pending_verification', label: 'Pending Verification' },
+  { value: 'pending_review', label: 'Pending Review' },
+  { value: 'active', label: 'Active Account' },
 ];
 
 const balancePresets = [1000, 5000, 10000, 50000, 100000];
 
 const DemoStateSwitcher = () => {
   const [open, setOpen] = useState(false);
-  const [current, setCurrent] = useState<AuthAccountState | "auto">(getDemoState() ?? "auto");
+  const [current, setCurrent] = useState<AuthAccountState | 'auto'>(
+    getDemoState() ?? 'auto'
+  );
   const [showSim, setShowSim] = useState(false);
 
-  const handleChange = (val: AuthAccountState | "auto") => {
+  const handleChange = (val: AuthAccountState | 'auto') => {
     setCurrent(val);
-    setDemoState(val === "auto" ? null : val);
+    setDemoState(val === 'auto' ? null : val);
   };
 
   const handleResetAccount = (balance?: number) => {
@@ -42,24 +61,24 @@ const DemoStateSwitcher = () => {
   };
 
   const handleSeedWins = async () => {
-    const { seedWinningTrades } = await import("@/lib/analytics-engine");
+    const { seedWinningTrades } = await import('@/lib/analytics-engine');
     seedWinningTrades();
     window.location.reload();
   };
 
   const handleSeedLosses = async () => {
-    const { seedLosingTrades } = await import("@/lib/analytics-engine");
+    const { seedLosingTrades } = await import('@/lib/analytics-engine');
     seedLosingTrades();
     window.location.reload();
   };
 
   const handleSimChallengePass = () => {
-    saveChallengeStatus("passed");
+    saveChallengeStatus('passed');
     window.location.reload();
   };
 
   const handleSimChallengeFail = () => {
-    saveChallengeStatus("failed");
+    saveChallengeStatus('failed');
     window.location.reload();
   };
 
@@ -83,8 +102,8 @@ const DemoStateSwitcher = () => {
               onClick={() => handleChange(s.value)}
               className={`w-full text-left text-xs px-3 py-1.5 rounded-lg transition-colors ${
                 current === s.value
-                  ? "bg-primary/20 text-primary font-medium"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  ? 'bg-primary/20 text-primary font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
             >
               {s.label}
@@ -96,12 +115,14 @@ const DemoStateSwitcher = () => {
             onClick={() => setShowSim(!showSim)}
             className="w-full text-left text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mt-2 pt-2 border-t border-border/30 hover:text-foreground"
           >
-            Simulator Controls {showSim ? "▾" : "▸"}
+            Simulator Controls {showSim ? '▾' : '▸'}
           </button>
 
           {showSim && (
             <div className="space-y-1.5">
-              <p className="text-[10px] text-muted-foreground px-1">Set Balance</p>
+              <p className="text-[10px] text-muted-foreground px-1">
+                Set Balance
+              </p>
               <div className="flex flex-wrap gap-1">
                 {balancePresets.map((b) => (
                   <button
@@ -135,20 +156,37 @@ const DemoStateSwitcher = () => {
                 <Trash2 className="h-3 w-3" /> Clear All Data
               </button>
 
-              <p className="text-[10px] text-muted-foreground px-1 pt-1 border-t border-border/30 mt-1">Analytics & Challenge</p>
-              <button onClick={handleSeedWins} className="w-full flex items-center gap-2 text-left text-xs px-3 py-1.5 rounded-lg text-success hover:bg-success/10 transition-colors">
+              <p className="text-[10px] text-muted-foreground px-1 pt-1 border-t border-border/30 mt-1">
+                Analytics & Challenge
+              </p>
+              <button
+                onClick={() => void handleSeedWins()}
+                className="w-full flex items-center gap-2 text-left text-xs px-3 py-1.5 rounded-lg text-success hover:bg-success/10 transition-colors"
+              >
                 <TrendingUp className="h-3 w-3" /> Seed Winning Trades
               </button>
-              <button onClick={handleSeedLosses} className="w-full flex items-center gap-2 text-left text-xs px-3 py-1.5 rounded-lg text-destructive hover:bg-destructive/10 transition-colors">
+              <button
+                onClick={() => void handleSeedLosses()}
+                className="w-full flex items-center gap-2 text-left text-xs px-3 py-1.5 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+              >
                 <TrendingDown className="h-3 w-3" /> Seed Losing Trades
               </button>
-              <button onClick={handleSimChallengePass} className="w-full flex items-center gap-2 text-left text-xs px-3 py-1.5 rounded-lg text-success hover:bg-success/10 transition-colors">
+              <button
+                onClick={handleSimChallengePass}
+                className="w-full flex items-center gap-2 text-left text-xs px-3 py-1.5 rounded-lg text-success hover:bg-success/10 transition-colors"
+              >
                 <Trophy className="h-3 w-3" /> Simulate Challenge Pass
               </button>
-              <button onClick={handleSimChallengeFail} className="w-full flex items-center gap-2 text-left text-xs px-3 py-1.5 rounded-lg text-destructive hover:bg-destructive/10 transition-colors">
+              <button
+                onClick={handleSimChallengeFail}
+                className="w-full flex items-center gap-2 text-left text-xs px-3 py-1.5 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+              >
                 <XCircle className="h-3 w-3" /> Simulate Challenge Breach
               </button>
-              <button onClick={handleResetPerformance} className="w-full flex items-center gap-2 text-left text-xs px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+              <button
+                onClick={handleResetPerformance}
+                className="w-full flex items-center gap-2 text-left text-xs px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              >
                 <RotateCcw className="h-3 w-3" /> Reset All Performance
               </button>
             </div>

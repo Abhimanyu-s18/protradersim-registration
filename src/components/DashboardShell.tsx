@@ -1,20 +1,42 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
-  TrendingUp, LayoutDashboard, BarChart3, LineChart, Briefcase,
-  ListOrdered, Target, ShieldCheck, User, LogOut, Menu, X, Activity, Trophy,
-} from "lucide-react";
+  TrendingUp,
+  LayoutDashboard,
+  BarChart3,
+  LineChart,
+  Briefcase,
+  ListOrdered,
+  Target,
+  ShieldCheck,
+  User,
+  LogOut,
+  Menu,
+  X,
+  Activity,
+  Trophy,
+  BadgeCheck,
+  Settings,
+  Scale,
+} from 'lucide-react';
 
 const navItems = [
-  { label: "Overview", icon: LayoutDashboard, path: "/dashboard" },
-  { label: "Markets", icon: BarChart3, path: "/dashboard/markets" },
-  { label: "Trade Simulator", icon: LineChart, path: "/dashboard/markets" },
-  { label: "Positions", icon: Briefcase, path: "/dashboard/positions" },
-  { label: "Orders", icon: ListOrdered, path: "/dashboard/orders" },
-  { label: "Performance", icon: Target, path: "/dashboard/performance" },
-  { label: "Challenge", icon: Trophy, path: "/dashboard/challenge" },
-  { label: "Risk", icon: ShieldCheck, path: "/dashboard/risk" },
-  { label: "Profile", icon: User, path: "/dashboard" },
+  { label: 'Overview', icon: LayoutDashboard, path: '/dashboard' },
+  { label: 'Markets', icon: BarChart3, path: '/dashboard/markets' },
+  {
+    label: 'Trade Simulator',
+    icon: LineChart,
+    path: '/dashboard/trade-simulator',
+  },
+  { label: 'Positions', icon: Briefcase, path: '/dashboard/positions' },
+  { label: 'Orders', icon: ListOrdered, path: '/dashboard/orders' },
+  { label: 'Performance', icon: Target, path: '/dashboard/performance' },
+  { label: 'Challenge', icon: Trophy, path: '/dashboard/challenge' },
+  { label: 'Risk', icon: ShieldCheck, path: '/dashboard/risk' },
+  { label: 'Verification', icon: BadgeCheck, path: '/dashboard/verification' },
+  { label: 'Compliance', icon: Scale, path: '/dashboard/compliance' },
+  { label: 'Profile', icon: User, path: '/dashboard/profile' },
+  { label: 'Settings', icon: Settings, path: '/dashboard/settings' },
 ];
 
 interface Props {
@@ -30,13 +52,21 @@ export default function DashboardShell({ children, title, activeItem }: Props) {
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-60 border-r border-border/50 bg-sidebar-background transition-transform lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 w-60 border-r border-border/50 bg-sidebar-background transition-transform lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
         <div className="flex h-14 items-center gap-2.5 border-b border-border/50 px-4">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg gold-gradient">
             <TrendingUp className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="text-sm font-bold text-foreground">ProTraderSim</span>
-          <button className="ml-auto lg:hidden text-muted-foreground" onClick={() => setSidebarOpen(false)}>
+          <span className="text-sm font-bold text-foreground">
+            ProTraderSim
+          </span>
+          <button
+            className="ml-auto lg:hidden text-muted-foreground"
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Close sidebar"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -48,8 +78,8 @@ export default function DashboardShell({ children, title, activeItem }: Props) {
               onClick={() => setSidebarOpen(false)}
               className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
                 activeItem === item.label
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  ? 'bg-primary/10 text-primary font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
             >
               <item.icon className="h-4 w-4" />
@@ -59,7 +89,7 @@ export default function DashboardShell({ children, title, activeItem }: Props) {
         </nav>
         <div className="absolute bottom-0 left-0 right-0 border-t border-border/50 p-3">
           <button
-            onClick={() => navigate("/sign-in")}
+            onClick={() => navigate('/sign-in')}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50"
           >
             <LogOut className="h-4 w-4" /> Sign Out
@@ -67,12 +97,21 @@ export default function DashboardShell({ children, title, activeItem }: Props) {
         </div>
       </aside>
 
-      {sidebarOpen && <div className="fixed inset-0 z-30 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-border/50 bg-background/80 backdrop-blur-xl px-4">
-          <button className="lg:hidden text-muted-foreground" onClick={() => setSidebarOpen(true)}>
+          <button
+            className="lg:hidden text-muted-foreground"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open sidebar"
+          >
             <Menu className="h-5 w-5" />
           </button>
           <h1 className="text-sm font-semibold text-foreground">{title}</h1>

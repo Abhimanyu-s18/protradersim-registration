@@ -1,10 +1,10 @@
-import { useNavigate } from "react-router-dom";
-import { loadRegistration } from "@/lib/registration-store";
-import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
-import ProgressStepper from "@/components/ProgressStepper";
-import { ArrowLeft, Lock } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { loadRegistration } from '@/lib/registration-store';
+import { Button } from '@/components/ui/button';
+import Header from '@/components/Header';
+import ProgressStepper from '@/components/ProgressStepper';
+import { ArrowLeft, Lock } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const RegisterStep4 = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const RegisterStep4 = () => {
   useEffect(() => {
     const saved = loadRegistration();
     if (!saved?.step3) {
-      navigate("/register/step-3");
+      navigate('/register/step-3');
       return;
     }
     setData(saved);
@@ -22,9 +22,9 @@ const RegisterStep4 = () => {
   if (!data) return null;
 
   const sections = [
-    { title: "Step 1 — Personal Details", payload: data.step1 },
-    { title: "Step 2 — Address Details", payload: data.step2 },
-    { title: "Step 3 — Trading Profile", payload: data.step3 },
+    { title: 'Step 1 — Personal Details', payload: data.step1 },
+    { title: 'Step 2 — Address Details', payload: data.step2 },
+    { title: 'Step 3 — Trading Profile', payload: data.step3 },
   ];
 
   return (
@@ -48,7 +48,10 @@ const RegisterStep4 = () => {
 
           <div className="space-y-4">
             {sections.map((s) => (
-              <div key={s.title} className="rounded-lg border border-border/60 bg-muted/30 p-4">
+              <div
+                key={s.title}
+                className="rounded-lg border border-border/60 bg-muted/30 p-4"
+              >
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                   {s.title}
                 </h3>
@@ -63,7 +66,9 @@ const RegisterStep4 = () => {
           <div className="mt-6 flex items-start gap-2 rounded-lg border border-border/40 bg-muted/20 p-3">
             <Lock className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Email verification and final regulatory declarations will be completed in this step. Your account will be activated upon successful verification.
+              Email verification and final regulatory declarations will be
+              completed in this step. Your account will be activated upon
+              successful verification.
             </p>
           </div>
 
@@ -80,7 +85,7 @@ const RegisterStep4 = () => {
               variant="gold-outline"
               size="lg"
               className="w-full"
-              onClick={() => navigate("/register/step-3")}
+              onClick={() => navigate('/register/step-3')}
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Trading Profile

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
-import { loadRegistration } from "@/lib/registration-store";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import Header from '@/components/Header';
+import { loadRegistration } from '@/lib/registration-store';
 import {
   CheckCircle2,
   Clock,
@@ -10,20 +10,20 @@ import {
   ArrowRight,
   Copy,
   Check,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const CHECKLIST = [
-  { key: "personal", label: "Personal details captured" },
-  { key: "address", label: "Address details captured" },
-  { key: "trading", label: "Trading profile completed" },
-  { key: "declarations", label: "Declarations accepted" },
+  { key: 'personal', label: 'Personal details captured' },
+  { key: 'address', label: 'Address details captured' },
+  { key: 'trading', label: 'Trading profile completed' },
+  { key: 'declarations', label: 'Declarations accepted' },
 ];
 
 const NEXT_STEPS = [
-  { icon: Mail, label: "Verify your email address" },
-  { icon: Clock, label: "Wait for account review" },
-  { icon: ArrowRight, label: "Sign in once activation is confirmed" },
+  { icon: Mail, label: 'Verify your email address' },
+  { icon: Clock, label: 'Wait for account review' },
+  { icon: ArrowRight, label: 'Sign in once activation is confirmed' },
 ];
 
 const RegisterSuccess = () => {
@@ -34,7 +34,7 @@ const RegisterSuccess = () => {
   useEffect(() => {
     const saved = loadRegistration();
     if (!saved?.completed) {
-      navigate("/register");
+      navigate('/register');
       return;
     }
     setData(saved);
@@ -42,7 +42,7 @@ const RegisterSuccess = () => {
 
   if (!data) return null;
 
-  const refId = data.step4?.referenceId || "—";
+  const refId = data.step4?.referenceId || '—';
   const emailVerified = data.step4?.emailVerificationSent;
 
   const handleCopy = () => {
@@ -73,7 +73,9 @@ const RegisterSuccess = () => {
 
           {/* Reference ID */}
           <div className="mt-6 mx-auto max-w-sm rounded-lg border border-border/60 bg-muted/30 p-4">
-            <p className="text-xs text-muted-foreground mb-1">Registration Reference</p>
+            <p className="text-xs text-muted-foreground mb-1">
+              Registration Reference
+            </p>
             <div className="flex items-center justify-center gap-2">
               <span className="font-mono text-lg font-semibold text-primary tracking-wider">
                 {refId}
@@ -105,10 +107,10 @@ const RegisterSuccess = () => {
             ))}
             <div
               className={cn(
-                "flex items-center gap-3 rounded-lg border px-4 py-2.5",
+                'flex items-center gap-3 rounded-lg border px-4 py-2.5',
                 emailVerified
-                  ? "border-success/30 bg-success/5"
-                  : "border-primary/30 bg-primary/5"
+                  ? 'border-success/30 bg-success/5'
+                  : 'border-primary/30 bg-primary/5'
               )}
             >
               {emailVerified ? (
@@ -117,7 +119,7 @@ const RegisterSuccess = () => {
                 <Clock className="h-4 w-4 text-primary shrink-0" />
               )}
               <span className="text-sm text-foreground">
-                Email verification {emailVerified ? "sent" : "pending"}
+                Email verification {emailVerified ? 'sent' : 'pending'}
               </span>
             </div>
           </div>
@@ -148,7 +150,7 @@ const RegisterSuccess = () => {
               variant="gold"
               size="lg"
               className="flex-1"
-              onClick={() => navigate("/register")}
+              onClick={() => navigate('/register')}
             >
               Return to Sign In
             </Button>
@@ -156,7 +158,7 @@ const RegisterSuccess = () => {
               variant="gold-outline"
               size="lg"
               className="flex-1"
-              onClick={() => navigate("/register/review")}
+              onClick={() => navigate('/register/review')}
             >
               Review Submitted Details
             </Button>

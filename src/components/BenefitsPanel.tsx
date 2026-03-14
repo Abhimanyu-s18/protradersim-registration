@@ -1,10 +1,22 @@
-import { BarChart3, Shield, Zap, Globe } from "lucide-react";
+import { BarChart3, Shield, Zap, Globe } from 'lucide-react';
 
 const benefits = [
-  { icon: Globe, label: "60+ Instruments", desc: "Forex, indices, commodities & crypto" },
-  { icon: Zap, label: "Up to 1:500 Leverage", desc: "Flexible simulated margin" },
-  { icon: BarChart3, label: "Real-Time Prices", desc: "Live simulated market data" },
-  { icon: Shield, label: "Risk Tools", desc: "Professional-grade analytics" },
+  {
+    icon: Globe,
+    label: '60+ Instruments',
+    desc: 'Forex, indices, commodities & crypto',
+  },
+  {
+    icon: Zap,
+    label: 'Up to 1:500 Leverage',
+    desc: 'Flexible simulated margin',
+  },
+  {
+    icon: BarChart3,
+    label: 'Real-Time Prices',
+    desc: 'Live simulated market data',
+  },
+  { icon: Shield, label: 'Risk Tools', desc: 'Professional-grade analytics' },
 ];
 
 const BenefitsPanel = () => {

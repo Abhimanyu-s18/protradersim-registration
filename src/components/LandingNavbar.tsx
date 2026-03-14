@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { TrendingUp, Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { TrendingUp, Menu, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Markets", href: "/markets" },
-  { label: "Platform", href: "/platform" },
-  { label: "How It Works", href: "/#how-it-works" },
-  { label: "FAQ", href: "/#faq" },
+  { label: 'Home', href: '/' },
+  { label: 'Markets', href: '/markets' },
+  { label: 'Platform', href: '/platform' },
+  { label: 'How It Works', href: '/#how-it-works' },
+  { label: 'FAQ', href: '/#faq' },
 ];
 
 const LandingNavbar = () => {
@@ -17,10 +17,10 @@ const LandingNavbar = () => {
 
   const scrollOrNavigate = (href: string) => {
     setMobileOpen(false);
-    if (href.startsWith("/#")) {
+    if (href.startsWith('/#')) {
       const id = href.slice(2);
-      if (location.pathname === "/") {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      if (location.pathname === '/') {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
       } else {
         window.location.href = href;
       }
@@ -42,7 +42,7 @@ const LandingNavbar = () => {
         {/* Desktop nav */}
         <nav className="hidden items-center gap-1 md:flex">
           {navItems.map((item) =>
-            item.href.startsWith("/#") ? (
+            item.href.startsWith('/#') ? (
               <button
                 key={item.label}
                 onClick={() => scrollOrNavigate(item.href)}
@@ -64,20 +64,34 @@ const LandingNavbar = () => {
 
         <div className="hidden items-center gap-3 md:flex">
           <Link to="/sign-in">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Sign In
             </Button>
           </Link>
           <Link to="/register">
-            <Button size="sm" className="gold-gradient text-primary-foreground font-semibold">
+            <Button
+              size="sm"
+              className="gold-gradient text-primary-foreground font-semibold"
+            >
               Get Started
             </Button>
           </Link>
         </div>
 
         {/* Mobile toggle */}
-        <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        <button
+          className="md:hidden text-foreground"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
         </button>
       </div>
 
@@ -86,7 +100,7 @@ const LandingNavbar = () => {
         <div className="border-t border-border/30 bg-background/95 backdrop-blur-xl md:hidden">
           <nav className="container flex flex-col gap-1 py-4">
             {navItems.map((item) =>
-              item.href.startsWith("/#") ? (
+              item.href.startsWith('/#') ? (
                 <button
                   key={item.label}
                   onClick={() => scrollOrNavigate(item.href)}
@@ -107,10 +121,14 @@ const LandingNavbar = () => {
             )}
             <div className="mt-3 flex flex-col gap-2 px-3">
               <Link to="/sign-in" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" className="w-full">Sign In</Button>
+                <Button variant="outline" className="w-full">
+                  Sign In
+                </Button>
               </Link>
               <Link to="/register" onClick={() => setMobileOpen(false)}>
-                <Button className="w-full gold-gradient text-primary-foreground font-semibold">Get Started</Button>
+                <Button className="w-full gold-gradient text-primary-foreground font-semibold">
+                  Get Started
+                </Button>
               </Link>
             </div>
           </nav>
