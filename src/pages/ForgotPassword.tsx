@@ -57,14 +57,15 @@ const ForgotPassword = () => {
                   link has been sent.
                 </p>
               </div>
-              <Link to="/sign-in">
-                <Button variant="outline" className="w-full mt-2">
-                  Return to Sign In
-                </Button>
-              </Link>
+              <Button asChild variant="outline" className="w-full mt-2">
+                <Link to="/sign-in">Return to Sign In</Link>
+              </Button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <form
+              onSubmit={(e) => void handleSubmit(e)}
+              className="mt-6 space-y-4"
+            >
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input

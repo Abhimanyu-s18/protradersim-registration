@@ -156,6 +156,15 @@ export default function DashboardSettings() {
 
   // Save Security Settings (mock)
   const handleSaveSecurity = () => {
+    // Validate current password is provided when changing password
+    if (securityForm.newPassword && !securityForm.currentPassword) {
+      toast({
+        title: 'Current Password Required',
+        description: 'Please enter your current password to change it.',
+        variant: 'destructive',
+      });
+      return;
+    }
     if (
       securityForm.newPassword &&
       securityForm.newPassword !== securityForm.confirmPassword
@@ -167,6 +176,12 @@ export default function DashboardSettings() {
       });
       return;
     }
+    // Only show success if something was actually changed
+    if (!securityForm.newPassword && !securityForm.twoFactorEnabled) {
+      // Nothing to save
+      return;
+    }
+    // TODO: Persist twoFactorEnabled and call password change API
     toast({
       title: 'Security Settings Saved',
       description: 'Your security settings have been updated successfully.',
@@ -232,6 +247,11 @@ export default function DashboardSettings() {
                         })
                       }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={
+                        securityForm.showCurrentPassword
+                          ? 'Hide current password'
+                          : 'Show current password'
+                      }
                     >
                       {securityForm.showCurrentPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -519,12 +539,12 @@ export default function DashboardSettings() {
                   </p>
                 </div>
                 <Switch
-                  checked={notifications.marketNews || false}
+                  checked={notifications.marketNews}
                   onCheckedChange={(checked) =>
                     setNotifications({
                       ...notifications,
                       marketNews: checked,
-                    } as NotificationSettings)
+                    })
                   }
                   disabled={!notifications.emailNotifications}
                 />
@@ -712,7 +732,7 @@ export default function DashboardSettings() {
                 onChange={(e) =>
                   setTradingPrefs({
                     ...tradingPrefs,
-                    defaultOrderSize: parseFloat(e.target.value) || 0,
+                    defaultOrderSize: parseFloat(e.target.value) || 0.01,
                   })
                 }
                 placeholder="0.1"
@@ -779,8 +799,10 @@ export default function DashboardSettings() {
                 Default Timeframe
               </Label>
               <Select
-                value={tradingPrefs.defaultTimeframe || '1h'}
-                onValueChange={(value) =>
+                value={tradingPrefs.defaultTimeframe}
+                onValueChange={(
+                  value: '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d'
+                ) =>
                   setTradingPrefs({ ...tradingPrefs, defaultTimeframe: value })
                 }
               >
@@ -831,12 +853,12 @@ export default function DashboardSettings() {
                 </p>
               </div>
               <Switch
-                checked={tradingPrefs.showPositionPnLInHeader || false}
+                checked={tradingPrefs.showPositionPnLInHeader}
                 onCheckedChange={(checked) =>
                   setTradingPrefs({
                     ...tradingPrefs,
                     showPositionPnLInHeader: checked,
-                  } as TradingPreferences)
+                  })
                 }
               />
             </div>

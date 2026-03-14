@@ -90,7 +90,7 @@ export default function TradeTicket({
     const positions = getPositions();
     const instruments = getInstruments();
     return calculateMetrics(instruments, positions);
-  }, []); // recalc when positions/instruments change
+  }, []);
 
   const availableLeverages = LEVERAGE_OPTIONS.filter((l) =>
     inst ? l <= inst.leverageMax : true

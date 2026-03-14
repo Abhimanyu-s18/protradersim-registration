@@ -185,7 +185,7 @@ export default function DashboardPositions() {
                       ) : (
                         <>
                           <td className="px-4 py-3 font-mono text-foreground">
-                            {(p.exitPrice ?? p.currentPrice).toFixed(2)}
+                            {(p.exitPrice ?? p.currentPrice)?.toFixed(2) ?? '—'}
                           </td>
                           <td className="px-4 py-3">
                             <span

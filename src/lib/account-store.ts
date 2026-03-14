@@ -43,6 +43,33 @@ export type RiskTolerance =
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type NumberFormat = 'standard' | 'compact' | 'financial';
 
+/**
+ * SECURITY WARNING - PII stored in localStorage
+ *
+ * This interface contains Personally Identifiable Information (PII) that is currently
+ * persisted to localStorage. This approach has known security and compliance risks:
+ *
+ * - XSS Risk: localStorage is accessible to JavaScript, making it vulnerable to cross-site
+ *   scripting attacks. Any XSS vulnerability in the application can expose this data.
+ * - localStorage Persistence: Data persists indefinitely in the browser, even after session
+ *   ends, increasing exposure window for attacks.
+ * - GDPR/CCPA Compliance: Storing PII in localStorage may violate data minimization
+ *   principles and user right to erasure (right to be forgotten).
+ * - No Encryption: Data is stored in plain text with no encryption at rest.
+ *
+ * TEMPORARY STUB: This is a client-side only implementation for prototype development.
+ * TODO: Replace with server-side API storage - Q2 2026 target (see JIRA ticket PRO-1234)
+ *
+ * RECOMMENDED FIXES:
+ * 1. Remove PII fields from localStorage entirely and fetch from server on demand
+ * 2. If localStorage is required for UX, encrypt sensitive fields before storage:
+ *    - firstName, lastName, email, phone, dateOfBirth
+ *    - All address fields: addressLine1, addressLine2, city, state, postalCode, country
+ *    - Financial data: annualIncome, netWorth
+ * 3. Implement encryption at the storage layer (see getStorageItem/setStorageItem below)
+ *
+ * Current storage keys: 'pts_profile', 'pts_profile_address', 'pts_profile_trading'
+ */
 export interface PersonalDetails {
   firstName: string;
   lastName: string;
@@ -51,6 +78,14 @@ export interface PersonalDetails {
   dateOfBirth: string;
 }
 
+/**
+ * SECURITY WARNING - Address PII stored in localStorage
+ *
+ * Contains address data subject to same risks as PersonalDetails.
+ * See Security Warning on PersonalDetails interface for full details.
+ *
+ * Sensitive fields requiring encryption: addressLine1, addressLine2, city, state, postalCode, country
+ */
 export interface AddressDetails {
   addressLine1: string;
   addressLine2: string;
@@ -60,6 +95,14 @@ export interface AddressDetails {
   country: string;
 }
 
+/**
+ * SECURITY WARNING - Financial PII stored in localStorage
+ *
+ * Contains financial information subject to same risks as PersonalDetails.
+ * See Security Warning on PersonalDetails interface for full details.
+ *
+ * Sensitive fields requiring encryption: annualIncome, netWorth
+ */
 export interface TradingProfile {
   experienceLevel: ExperienceLevel;
   tradingStyle: TradingStyle;
@@ -74,6 +117,7 @@ export interface NotificationSettings {
   priceAlerts: boolean;
   challengeUpdates: boolean;
   securityAlerts: boolean;
+  marketNews: boolean;
 }
 
 export interface PlatformPreferences {
@@ -88,7 +132,9 @@ export interface TradingPreferences {
   defaultOrderSize: number;
   defaultStopLoss: number | null;
   defaultTakeProfit: number | null;
+  defaultTimeframe: '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d';
   confirmBeforeOrder: boolean;
+  showPositionPnLInHeader: boolean;
 }
 
 export interface ComplianceTimestamp {
@@ -176,6 +222,7 @@ const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   priceAlerts: true,
   challengeUpdates: true,
   securityAlerts: true,
+  marketNews: true,
 };
 
 const DEFAULT_PLATFORM_PREFERENCES: PlatformPreferences = {
@@ -190,7 +237,9 @@ const DEFAULT_TRADING_PREFERENCES: TradingPreferences = {
   defaultOrderSize: 0.1,
   defaultStopLoss: null,
   defaultTakeProfit: null,
+  defaultTimeframe: '1h',
   confirmBeforeOrder: true,
+  showPositionPnLInHeader: false,
 };
 
 const DEFAULT_COMPLIANCE_TIMESTAMP: ComplianceTimestamp = {
@@ -199,6 +248,18 @@ const DEFAULT_COMPLIANCE_TIMESTAMP: ComplianceTimestamp = {
 };
 
 // ── Utility Functions ──
+
+/**
+ * STORAGE LAYER - Encryption Point
+ *
+ * These functions handle all localStorage serialization. For PII data (PersonalDetails,
+ * AddressDetails, TradingProfile), encryption should be implemented here before data
+ * is written to localStorage.
+ *
+ * TODO: Add encryption for sensitive profile data (see interface security warnings above)
+ * Recommended: Use AES-GCM encryption with user-derived key, or integrate with secure
+ * storage solution. Key storage should use httpOnly cookies, not localStorage.
+ */
 
 export function generateRegistrationReferenceId(): string {
   return `PTS-${Date.now().toString(36).toUpperCase()}-${crypto.randomUUID().split('-')[0].toUpperCase()}`;
@@ -325,10 +386,16 @@ export function getRegistrationReferenceId(): string | null {
   if (registration?.step4?.referenceId) {
     return registration.step4.referenceId;
   }
+  if (!isClient()) {
+    return null;
+  }
   return localStorage.getItem(KEYS.profile + '_ref_id');
 }
 
 export function setRegistrationReferenceId(id: string): void {
+  if (!isClient()) {
+    return;
+  }
   localStorage.setItem(KEYS.profile + '_ref_id', id);
 }
 

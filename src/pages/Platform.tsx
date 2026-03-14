@@ -118,14 +118,15 @@ const Platform = () => (
       </div>
 
       <div className="mt-16 text-center">
-        <Link to="/register">
-          <Button
-            size="lg"
-            className="gold-gradient text-primary-foreground font-semibold px-8"
-          >
+        <Button
+          asChild
+          size="lg"
+          className="gold-gradient text-primary-foreground font-semibold px-8"
+        >
+          <Link to="/register">
             Create Your Account <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </div>
     <LandingFooter />

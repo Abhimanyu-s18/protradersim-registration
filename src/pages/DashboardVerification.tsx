@@ -400,14 +400,16 @@ export default function DashboardVerification() {
                         )}
                         Resend Email
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => simulateVerification?.('email')}
-                        className="text-xs"
-                      >
-                        Simulate Verified (Dev)
-                      </Button>
+                      {isDev && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => simulateVerification?.('email')}
+                          className="text-xs"
+                        >
+                          Simulate Verified (Dev)
+                        </Button>
+                      )}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 text-sm text-green-500">
@@ -808,22 +810,24 @@ export default function DashboardVerification() {
                           <ClipboardCheck className="h-4 w-4" />
                           Complete Assessment
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSuitabilityCompleted(true);
-                            setVerification(getVerificationStatus());
-                            toast({
-                              title: 'Assessment Completed',
-                              description:
-                                'Your suitability assessment has been marked as complete.',
-                            });
-                          }}
-                          className="text-xs text-muted-foreground"
-                        >
-                          Simulate Complete (Dev)
-                        </Button>
+                        {isDev && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setSuitabilityCompleted(true);
+                              setVerification(getVerificationStatus());
+                              toast({
+                                title: 'Assessment Completed',
+                                description:
+                                  'Your suitability assessment has been marked as complete.',
+                              });
+                            }}
+                            className="text-xs text-muted-foreground"
+                          >
+                            Simulate Complete (Dev)
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ) : (
@@ -917,7 +921,8 @@ export default function DashboardVerification() {
                   )}
 
                   {verification.accountReviewStatus !== 'approved' &&
-                    verification.suitabilityCompleted && (
+                    verification.suitabilityCompleted &&
+                    isDev && (
                       <Button
                         variant="ghost"
                         size="sm"

@@ -59,7 +59,8 @@ import { getAccountState } from '@/lib/auth-store';
 
 const fmt = (n: number, d = 2) =>
   `$${n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d })}`;
-const pctFmt = (n: number) => (n === Infinity ? '∞' : `${n.toFixed(1)}%`);
+const pctFmt = (n: number) =>
+  n === Infinity ? '∞' : Number.isNaN(n) ? 'N/A' : `${n.toFixed(1)}%`;
 
 // Helper to format date
 const formatDate = (dateString: string | null) => {

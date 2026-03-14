@@ -165,7 +165,7 @@ const RegisterStep2 = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
               {/* Address Line 1 */}
               <div className="space-y-1.5">
                 <Label
@@ -321,7 +321,7 @@ const RegisterStep2 = () => {
                             update('country', c);
                             setCountryOpen(false);
                             setCountrySearch('');
-                            handleBlur('country');
+                            setTouched((t) => ({ ...t, country: true }));
                           }}
                         >
                           {c}

@@ -117,6 +117,36 @@ const DashboardChallenge = () => {
     challenge.rules.maxDailyDrawdown - challenge.dailyDrawdown
   );
 
+  const summaryCards: Array<{
+    label: string;
+    value: string;
+    icon: (props: { className?: string }) => JSX.Element;
+    color?: string;
+  }> = [
+    {
+      label: 'Starting Balance',
+      value: fmt(account.startingBalance),
+      icon: Zap,
+    },
+    {
+      label: 'Current Equity',
+      value: fmt(account.balance),
+      icon: TrendingUp,
+    },
+    {
+      label: 'Total Drawdown Buffer',
+      value: `${totalDrawdownBuffer.toFixed(2)}%`,
+      icon: ShieldCheck,
+      color: totalDrawdownBuffer < 2 ? 'text-destructive' : 'text-success',
+    },
+    {
+      label: 'Daily Drawdown Buffer',
+      value: `${dailyDrawdownBuffer.toFixed(2)}%`,
+      icon: ShieldCheck,
+      color: dailyDrawdownBuffer < 1 ? 'text-destructive' : 'text-success',
+    },
+  ];
+
   return (
     <DashboardShell title="Trader Evaluation" activeItem="Challenge">
       {/* Status Banner */}
@@ -204,32 +234,7 @@ const DashboardChallenge = () => {
 
       {/* Account & Buffer */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          {
-            label: 'Starting Balance',
-            value: fmt(account.startingBalance),
-            icon: Zap,
-          },
-          {
-            label: 'Current Equity',
-            value: fmt(account.balance),
-            icon: TrendingUp,
-          },
-          {
-            label: 'Total Drawdown Buffer',
-            value: `${totalDrawdownBuffer.toFixed(2)}%`,
-            icon: ShieldCheck,
-            color:
-              totalDrawdownBuffer < 2 ? 'text-destructive' : 'text-success',
-          },
-          {
-            label: 'Daily Drawdown Buffer',
-            value: `${dailyDrawdownBuffer.toFixed(2)}%`,
-            icon: ShieldCheck,
-            color:
-              dailyDrawdownBuffer < 1 ? 'text-destructive' : 'text-success',
-          },
-        ].map((item) => (
+        {summaryCards.map((item) => (
           <div key={item.label} className="glass-card rounded-xl p-4">
             <div className="flex items-center gap-2 mb-1">
               <item.icon className="h-3.5 w-3.5 text-primary" />
@@ -238,7 +243,7 @@ const DashboardChallenge = () => {
               </p>
             </div>
             <p
-              className={`text-xl font-bold font-mono ${(item as any).color ?? 'text-foreground'}`}
+              className={`text-xl font-bold font-mono ${item.color ?? 'text-foreground'}`}
             >
               {item.value}
             </p>

@@ -308,7 +308,7 @@ const RegisterStep3 = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
               {/* Employment Status */}
               <SelectField
                 label="Employment Status"

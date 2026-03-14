@@ -102,7 +102,7 @@ const AccountPending = () => {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button
-              onClick={handleResend}
+              onClick={() => void handleResend()}
               disabled={sending}
               className="flex-1 gold-gradient text-primary-foreground font-semibold"
             >

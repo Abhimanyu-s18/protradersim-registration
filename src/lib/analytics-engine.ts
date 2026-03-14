@@ -10,6 +10,8 @@ import {
   saveAccount,
   generateId,
   getInstrumentBySymbol,
+  Position,
+  Instrument,
 } from './trading-store';
 
 // ── Performance Metrics ──
@@ -98,7 +100,7 @@ export function calculatePerformanceMetrics(): PerformanceMetrics {
       : 0;
 
   // Drawdown calculation from equity curve
-  const curve = buildEquityCurve();
+  const curve = buildEquityCurve(positions);
   let peak = account.startingBalance;
   let maxDrawdown = 0;
   for (const point of curve) {
@@ -146,9 +148,8 @@ export function calculatePerformanceMetrics(): PerformanceMetrics {
 
 // ── Equity Curve ──
 
-export function buildEquityCurve(): EquityPoint[] {
+export function buildEquityCurve(positions: Position[]): EquityPoint[] {
   const account = getAccount();
-  const positions = getPositions();
   const closed = positions
     .filter((p) => p.status === 'Closed' && p.closedAt)
     .sort((a, b) => (a.closedAt ?? 0) - (b.closedAt ?? 0));
@@ -175,9 +176,10 @@ export function buildEquityCurve(): EquityPoint[] {
 
 // ── Asset Class Performance ──
 
-export function getAssetClassPerformance(): AssetClassPerformance[] {
-  const positions = getPositions();
-  const instruments = getInstruments();
+export function getAssetClassPerformance(
+  positions: Position[],
+  instruments: Instrument[]
+): AssetClassPerformance[] {
   const closed = positions.filter((p) => p.status === 'Closed');
   const byClass: Record<string, { pnl: number; wins: number; total: number }> =
     {};
@@ -201,11 +203,11 @@ export function getAssetClassPerformance(): AssetClassPerformance[] {
 
 // ── Insights ──
 
-export function generateInsights(): string[] {
-  const metrics = calculatePerformanceMetrics();
-  const classPerf = getAssetClassPerformance();
+export function generateInsights(
+  metrics: PerformanceMetrics,
+  classPerf: AssetClassPerformance[]
+): string[] {
   const insights: string[] = [];
-
   if (metrics.totalTrades === 0) {
     insights.push(
       'No closed trades yet. Start trading to see performance insights.'
@@ -296,7 +298,15 @@ export function getChallengeRules(): ChallengeRules {
 }
 
 export function saveChallengeStatus(status: ChallengeState['status']) {
-  localStorage.setItem(CHALLENGE_KEY + '_status', status);
+  try {
+    localStorage.setItem(CHALLENGE_KEY + '_status', status);
+  } catch (err) {
+    console.error(
+      'Failed to save challenge status to localStorage:',
+      CHALLENGE_KEY + '_status',
+      err
+    );
+  }
 }
 
 export function getChallengeStatus(): ChallengeState['status'] {
@@ -440,7 +450,7 @@ export function seedWinningTrades() {
       marginUsed: margin,
       leverage: inst.leverageMax,
       openedAt: ts,
-      closedAt: ts + 3600000 * Math.random() * 24,
+      closedAt: Math.min(Date.now(), ts + 3600000 * Math.random() * 24),
       exitPrice,
       realizedPnl: pnl,
       status: 'Closed',

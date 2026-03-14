@@ -18,7 +18,7 @@ interface ProtectedRouteProps {
  * @param children - The component(s) to render if authenticated
  * @param requiredState - Required account state(s) to access this route
  * @param redirectTo - Where to redirect if not authenticated (default: /sign-in)
- * @param fallback - Optional fallback UI to show while checking auth
+ * @param fallback - Optional fallback UI to show for unregistered users
  */
 export function ProtectedRoute({
   children,

@@ -70,10 +70,16 @@ const DashboardPerformance = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const equityCurve = useMemo(() => buildEquityCurve(), []);
-  const classPerf = useMemo(() => getAssetClassPerformance(), []);
-  const insights = useMemo(() => generateInsights(), []);
   const instruments = getInstruments();
+  const equityCurve = useMemo(() => buildEquityCurve(positions), [positions]);
+  const classPerf = useMemo(
+    () => getAssetClassPerformance(positions, instruments),
+    [positions, instruments]
+  );
+  const insights = useMemo(
+    () => generateInsights(metrics, classPerf),
+    [metrics, classPerf]
+  );
 
   const closedPositions = positions.filter((p) => p.status === 'Closed');
 

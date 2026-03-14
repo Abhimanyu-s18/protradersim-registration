@@ -20,7 +20,12 @@ const SignIn = () => {
   const location = useLocation();
 
   // Get the return URL from location state (set by ProtectedRoute)
-  const from = (location.state as { from?: string })?.from || '/dashboard';
+  const rawFrom = (location.state as { from?: string })?.from;
+  // Ensure redirect is a relative path (not an external URL or protocol-relative URL)
+  const from =
+    rawFrom && rawFrom.startsWith('/') && !rawFrom.startsWith('//')
+      ? rawFrom
+      : '/dashboard';
 
   const validate = () => {
     if (!email.trim()) return 'Please enter your email address.';

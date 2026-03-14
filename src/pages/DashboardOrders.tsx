@@ -42,7 +42,7 @@ export default function DashboardOrders() {
             <div className="py-16 text-center">
               <ListOrdered className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
               <p className="text-sm text-muted-foreground">
-                No {tab === 'open' ? 'open' : ''} orders yet
+                {tab === 'open' ? 'No open orders yet' : 'No order history yet'}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Place a simulated trade from the Markets page

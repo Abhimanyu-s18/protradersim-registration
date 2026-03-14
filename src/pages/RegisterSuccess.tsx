@@ -45,10 +45,14 @@ const RegisterSuccess = () => {
   const refId = data.step4?.referenceId || '—';
   const emailVerified = data.step4?.emailVerificationSent;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(refId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(refId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Ignore clipboard failures in this simulated flow
+    }
   };
 
   return (
@@ -81,7 +85,9 @@ const RegisterSuccess = () => {
                 {refId}
               </span>
               <button
-                onClick={handleCopy}
+                onClick={() => {
+                  void handleCopy();
+                }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 title="Copy reference ID"
               >
@@ -150,7 +156,7 @@ const RegisterSuccess = () => {
               variant="gold"
               size="lg"
               className="flex-1"
-              onClick={() => navigate('/register')}
+              onClick={() => navigate('/sign-in')}
             >
               Return to Sign In
             </Button>

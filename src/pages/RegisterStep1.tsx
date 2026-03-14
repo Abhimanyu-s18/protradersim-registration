@@ -183,7 +183,7 @@ const RegisterStep1 = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 {/* First Name */}
                 <div className="space-y-1.5">
