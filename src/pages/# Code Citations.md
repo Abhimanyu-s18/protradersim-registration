@@ -2,7 +2,9 @@
 
 ## License: No license — permission required
 
-**Provenance**: Verified via GitHub API - repository has no LICENSE file and returns NOASSERTION
+**Provenance**: Verified via GitHub API - repository has no LICENSE file (license: null)
+
+> **Note**: The GitHub API returns `license: null` when a repository has no LICENSE file, and returns `NOASSERTION` when a LICENSE file exists but GitHub cannot determine the license type.
 
 Source URL: https://github.com/gajus/eslint-config-canonical
 

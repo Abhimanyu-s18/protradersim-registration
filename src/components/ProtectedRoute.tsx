@@ -37,7 +37,7 @@ export function ProtectedRoute({
   // Check if current state matches any of the required states
   const isAuthorized = requiredStates.includes(currentState);
 
-  // Show fallback while determining auth state (optional loading state)
+  // Show fallback UI for unregistered users
   if (fallback && !isAuthorized && currentState === 'unregistered') {
     return <>{fallback}</>;
   }

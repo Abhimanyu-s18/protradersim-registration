@@ -692,10 +692,16 @@ export function getRegistrationSubmittedAt(): string | null {
   if (registration?.step4?.completedAt) {
     return registration.step4.completedAt;
   }
+  if (!isClient()) {
+    return null;
+  }
   return localStorage.getItem(KEYS.compliance + '_submitted_at');
 }
 
 export function setRegistrationSubmittedAt(timestamp: string): void {
+  if (!isClient()) {
+    return;
+  }
   localStorage.setItem(KEYS.compliance + '_submitted_at', timestamp);
 }
 
@@ -864,6 +870,9 @@ export function completeSuitabilityAssessment(): void {
 }
 
 export function resetAccountStore(): void {
+  if (!isClient()) {
+    return;
+  }
   localStorage.removeItem(KEYS.profile);
   localStorage.removeItem(KEYS.profile + '_address');
   localStorage.removeItem(KEYS.profile + '_trading');
